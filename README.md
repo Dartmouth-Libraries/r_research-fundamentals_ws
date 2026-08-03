@@ -1,4 +1,5 @@
-# REPLACE THE ABOVE WITH AN OVERVIEW OF YOUR WORKSHOP / COURSE / TUTORIAL SERIES
+# From Concepts to Code
+## Research Fundamentals in R
 
 ## 1. Overview
 
