@@ -1,0 +1,39 @@
+---
+title: "Exploring Train Router Data"
+author: "Jeremy Mikecz"
+format: html
+editor: visual
+---
+
+## 
+
+[Train-router repository](https://github.com/Flightmussy/trainrouter-atlas)
+
+```{r}
+# renv::install("tidyverse")
+# renv::install("sf")
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(sf)
+```
+
+```{r}
+routes_df <- read_csv(here("data/train_router/routes.csv"))
+
+routes_df |>
+    slice_min(fame_rank, n = 10) |>
+    select(name, from, to, distance_km)
+```
+
+```{r}
+
+gdf <- st_read(here("data/train_router/routes.geojson"))
+
+ggplot(gdf) +
+    geom_sf(aes(color = category)) +
+    theme_minimal() +
+    theme(legend.position = "right")
+```
