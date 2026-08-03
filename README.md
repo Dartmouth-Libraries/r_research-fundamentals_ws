@@ -4,15 +4,13 @@
 
 ## 2. Creator(s) / Author(s)
 
++ Katie Owers Bonner (Research Facilitation, Dartmouth Libraries)
++ Emily Myers (Research Facilitation, Dartmouth Libraries)
++ Jeremy Mikecz (Research Facilitation, Dartmouth Libraries)
+
 ## 3. Designed for:
 
-+ in-person, virtual, or hybrid workshop?
-
-+ class visit?
-
-+ full course?
-
-+ asynchronous instruction?
++ in-person, multi-day workshop
   
 ## 4. Learning Objectives
 
@@ -32,14 +30,15 @@ Upon completing the lessons offered here, the student will be able to:
   
 ## 5. Instructor(s) and Years Taught (if taught live)
 
-+ Jane Doe, Research Facilitiation (Intro to R Workshops, W2026 and F2028)
-+ John Q Public, Research Computing (R Essentials, F2031)
++ Katie Owers Bonner (Summer 2026)
++ Emily Myers (Summer 2026)
++ Jeremy Mikecz (Summer 2026)
 
 ## 6. Other Instructional Information
 
-**Level:** [Beginner/Intermediate/Advanced]
+**Level:** Beginner to Intermediate
 
-**Duration:** [length of workshop/course OR estimated time to completion for asynchronous study]
+**Duration:** 2 full days
 
 **Pre-requisites:** [required knowledge / skills to begin]
 
