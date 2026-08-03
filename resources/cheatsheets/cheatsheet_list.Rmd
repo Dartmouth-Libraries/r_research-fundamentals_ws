@@ -1,0 +1,14 @@
+---
+title: "cheatsheet_list"
+output: html_document
+---
+
+1. [Posit Cheatsheets](https://posit.co/resources/cheatsheets/)
+
+    a. [Tidyverse cheatsheets from Posit](https://r-graph-gallery.com/cheatsheets)
+
+2. [RStudio Cheatsheet](https://rstudio.github.io/cheatsheets/html/rstudio-ide.html)
+
+3. [tidyverse cheatsheet for beginners](https://www.datacamp.com/cheat-sheet/tidyverse-cheat-sheet-for-beginners)
+
+4. [ggplot cheatsheet](https://rstudio.github.io/cheatsheets/html/data-visualization.html)
