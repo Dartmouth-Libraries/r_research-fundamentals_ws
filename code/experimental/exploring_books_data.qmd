@@ -1,0 +1,211 @@
+---
+title: "Exploring Post45 Books Data"
+format: html
+editor: visual
+---
+
+# Exploring Post45 Books Data
+
+[Post45 Data](https://data.post45.org/our-data.html)
+
+## Setup
+
+```{r}
+# renv::install("tidyverse")
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(naniar)
+
+# Turn off scientific notation globally
+options(scipen = 999)
+```
+
+## Post45 Data
+
++-----------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------------------------------+
+| Dataset                                                                                                                                       | Description                                                                   | Opportunities for linking                                                                | Potential Steps                          |
++===============================================================================================================================================+===============================================================================+==========================================================================================+==========================================+
+| Major Literary Prizes                                                                                                                         | Author-level data recording the judges and winners of literary prizes         | **authors**: Most (but not all) authors have a wikidata id                               |                                          |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | **books**: no unique ids for books, instead could link by author wiki id + title of book |                                          |
++-----------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------------------------------+
+| [NYT Hardcover Fiction Bestsellers List](https://data.post45.org/posts/nyt_hardcover_fiction_bestsellers/) (3 different datasets) (1931-2020) | **Weekly Bestseller Data**: week-level data                                   | **bestseller data**:                                                                     | **Wrangling:**                           |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               | **Unique Titles Data**: book-level data                                       | authors - wikidata id;                                                                   | Merge titles + hathitrust data           |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               | **HathiTrust Metadata**: book-level data, could merge this with Unique Titles | date - first day of the week;                                                            | link titles/ht to weekly bestsellers     |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | book - OCLC ISBN (but limited \< 1970, not complete after), OCLC OWI                     | link / merge NYT data to literary prizes |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | **Titles Data:**                                                                         | create separate author table?            |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | authors: wiki and other ids                                                              | **Analysis:**                            |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | book: OCLC, OCLC ISBN, OCLC OWI                                                          |                                          |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | date: first week on list                                                                 |                                          |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | **Hathitrust data:**                                                                     |                                          |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | same ids as titles                                                                       |                                          |
++-----------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------------------------------+
+| [International Bestsellers](https://data.post45.org/posts/international-bestsellers/) (2013-22)                                               |                                                                               | no unique ids!                                                                           |                                          |
++-----------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------------------------------+
+| [Time Horizons of Futuristic Science Fiction](https://data.post45.org/posts/futuristic-fiction/)                                              | time of setting of futuristic science fiction (books, comics, movies, etc.)   | work: wikidata work id                                                                   |                                          |
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
+|                                                                                                                                               |                                                                               | could potentially retrieve author or book id from wikidata                               |                                          |
++-----------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------------------------------+
+|                                                                                                                                               |                                                                               |                                                                                          |                                          |
++-----------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------------------------------+
+
+: Literary data from Post45
+
+### Potential Analysis
+
+Cross-ref NYT bestsellers to prizes data: what trends or patterns seem to distinguish bestsellers that also win awards vs. bestsellers that don't (and prize-winners that aren't bestsellers)
+
+Cross-ref NYT bestsellers to International Bestsellers data: to what extent
+
+```{r}
+weeks_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-lists.csv"))
+
+titles_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-titles.csv"))
+
+hathi_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-hathitrust_metadata.csv"))
+```
+
+## Review Data
+
+```{r}
+colnames(weeks_df)
+```
+
+```{r}
+head(weeks_df)
+```
+
+```{r}
+colnames(titles_df)
+```
+
+```{r}
+head(titles_df)
+```
+
+```{r}
+colnames(hathi_df)
+```
+
+```{r}
+head(hathi_df)
+```
+
+## Questions for Students
+
+1.  Examine the 3 datasets. How would you describe them? What distinguishes them from each other?
+2.  Using these datasets together, what questions could you answer?
+3.  How could you go about linking or merging this data?
+
+```{notes}
+
+```
+
+## Exploring Potential for Linking / Merging
+
+Merging / Joining = joining datasets. Easiest way to do this is to join them by a unique identifier.
+
+Linking = adding unique identifiers to a dataset to enable cross-referencing or merging with other data
+
+```{r}
+print(dim(weeks_df))
+summary(weeks_df)
+```
+
+```{r}
+library(skimr)
+weeks_df |>
+    skim()
+```
+
+```{r}
+weeks_df |>
+    count(is.na(oclc_isbn))
+```
+
+```{r}
+weeks_df |>
+    count(is.na(author_wikidata))
+```
+
+```{r}
+titles_df |>
+    skim()
+```
+
+```{r}
+titles_df |>
+    count(is.na(author_wikidata))
+```
+
+```{r}
+titles_df |>
+    count(is.na(oclc_isbn))
+```
+
+```{r}
+titles_df |>
+    count(is.na(oclc_isbn), year)
+```
+
+```{r}
+ggplot(titles_df |> mutate(has_isbn = !is.na(oclc_isbn)), aes(x=year)) +
+    geom_bar(stat="count")
+```
+
+```{r}
+books_summary <- titles_df %>%
+    mutate(has_isbn = !is.na(oclc_isbn) & oclc_isbn != "") %>%
+    group_by(year, has_isbn) %>%
+    summarise(n = n(), .groups = "drop") %>%
+    group_by(year) %>%
+    mutate(pct = n / sum(n) * 100)
+
+ggplot(books_summary, aes(x = factor(year), y = pct, fill = has_isbn)) +
+    geom_col(position = "stack") +
+    labs(
+        x = "Year",
+        y = "Percent of books",
+        fill = "Has ISBN",
+        title = "Percent of books with an ISBN by year"
+    ) +
+    scale_fill_manual(values = c("TRUE" = "#009E73", "FALSE" = "#D55E00")) +
+    theme_minimal()
+```
+
+```{r}
+hathi_df |>
+    skim()
+```
+
+```{r}
+dupes_1 <- titles_df |>
+    add_count(oclc_owi, name = "n_owi") |>
+    filter(n_owi > 1) |>
+    arrange(oclc_owi)
+```
+
+## Merge or Link Data
+
+First, merge the Titles and HathiTrust Metadata tables
+
+```{r}
+
+
+```
+
+```{r}
+
+```

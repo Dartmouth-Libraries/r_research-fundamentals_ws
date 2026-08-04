@@ -9,6 +9,8 @@ editor: visual
 
 [Train-router repository](https://github.com/Flightmussy/trainrouter-atlas)
 
+## Setup
+
 ```{r}
 # renv::install("tidyverse")
 # renv::install("sf")
@@ -20,13 +22,21 @@ library(here)
 library(sf)
 ```
 
+## Import Routes Data & Review
+
 ```{r}
 routes_df <- read_csv(here("data/train_router/routes.csv"))
 
+head(routes_df)
+```
+
+```{r}
 routes_df |>
     slice_min(fame_rank, n = 10) |>
     select(name, from, to, distance_km)
 ```
+
+## Import Geospatial Routes Data & Review
 
 ```{r}
 
