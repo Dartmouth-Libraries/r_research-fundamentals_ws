@@ -1,0 +1,145 @@
+---
+title: "Exploring train data"
+author: "KOB"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+# Import
+
+```{r}
+d <- read.csv(here("data","routes.csv"))
+```
+
+# Explore
+
+```{r}
+glimpse(d)
+```
+
+```{r}
+summary(d)
+```
+
+# id is unique, name is not
+
+```{r}
+length(unique(d$id))
+length(unique(d$name))
+```
+
+# to/from
+
+There are more unique destinations than origins
+
+```{r}
+length(unique(d$from))
+length(unique(d$to))
+```
+
+# Category is a single tag
+
+```{r}
+d |> 
+  count(category)
+```
+
+# Train is the type of train
+
+not sure if there's much use for this
+
+```{r}
+d |> 
+  count(train)
+```
+
+# Operator is the company
+
+```{r}
+d |> 
+  count(operator, sort =TRUE)
+```
+
+# Distance - good for EDA
+
+```{r}
+hist(d$distance_km)
+```
+
+Very long tail. One is nearly double the others, so remove that:
+
+```{r}
+hist(d$distance_km, 
+     xlim = c(0,5000))
+```
+
+Still a long tail...
+
+```{r}
+shorties <- d |> 
+  filter(distance_km < 100)
+
+hist(shorties$distance_km)
+  
+```
+
+# Speed - better distribution
+
+```{r}
+hist(d$top_speed_kmh)
+```
+
+# Duration - formatting challenges!
+
+```{r}
+head(d$duration)
+```
+
+- times listed include min/h/days
+
+- numbers and spaces
+
+- \~ and (double one)
+
+- some notes, eg "round trip", "daylight only", "change trains"
+
+# Opening year - interesting recent boom
+
+```{r}
+hist(d$opened, breaks = 30)
+```
+
+# Passengers (pax) per year is mostly missing
+
+```{r}
+sum(is.na(d$pax_per_year))
+```
+
+```{r}
+hist(d$pax_per_year)
+```
+
+# Countries/countries_ISO
+
+multiples are split with a vertical bar:
+
+```{r}
+head(d$countries)
+```
+
+```{r}
+length(unique(d$countries))
+```
+
+# Highlight -free text sentence
+
+```{r}
+head(d$highlight)
+```
