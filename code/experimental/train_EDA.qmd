@@ -15,7 +15,7 @@ library(here)
 # Import
 
 ```{r}
-d <- read.csv(here("data","routes.csv"))
+d <- read.csv(here("data", "train_router", "routes.csv"))
 ```
 
 # Explore

@@ -1,0 +1,215 @@
+---
+title: "Session 2: Load and explore train data"
+author: "Emily Myers"
+date: 03/23/2026
+format: html
+editor: visual
+---
+
+Throughout this workshop series, we'll be answering a core question using this train route data:
+
+- What makes a train route famous?
+
+  - History?
+
+  - Route? i.e., origin, destination, countries traveled through
+
+  - Travel experience, e.g., speed, distance, train type
+
+Before we can answer those questions, we need to explore our data!
+
+# Load packages
+
+@Katie we will have covered install and installed relevant packages already, right?
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+# Import data
+
+```{r}
+routes_df <- read.csv(here("data", "train_router", "routes.csv"))
+```
+
+# Explore data
+
+Now that we've loaded our data, we can start exploring it! We'll start by looking at the structure and content of our data, and then dive into a more granular exploration of the variables most relevant to our questions. Our goals are two-fold:
+
+1.  Identify necessary cleaning and wrangling steps
+2.  Figure out if our data is suited to answer our questions
+
+## Examine structure and content of the data
+
+### Print the first few rows
+
+```{r}
+head(routes_df)
+```
+
+### Get the column names
+
+```{r}
+colnames(routes_df)
+```
+
+### Examine variable types
+
+```{r}
+lapply(routes_df, class)
+```
+
+Do you any variable types that don't seem right or might cause issues?
+
+Duration is a character variable! Takes the form of 2 h 15 min
+
+What are some ways to solve this?
+
+Transform to duration_minutes –\> 135 or duration_hours 2.25
+
+### Accomplish all of this with one command!
+
+```{r}
+str(routes_df)
+```
+
+### Look for NAs in each column
+
+```{r}
+routes_df|>
+  summarize(across(everything(), ~ sum(is.na(.))))
+```
+
+There are a lot of NAs in `pax_per_year`!
+
+### Quality check- do high-speed trains go the fastest? Let's look in two ways.
+
+#### Tibble
+
+```{r}
+routes_df |>
+    group_by(category) |>
+    summarize(
+        n        = n(),
+        min_speed = min(top_speed_kmh, na.rm = TRUE),
+        max_speed = max(top_speed_kmh, na.rm = TRUE),
+        mean_speed = mean(top_speed_kmh, na.rm = TRUE)
+    ) |>
+    arrange(desc(mean_speed))
+
+```
+
+#### Plot
+
+```{r}
+ggplot(routes_df, aes(x = category, y = top_speed_kmh)) +
+    geom_boxplot() +
+    geom_jitter(width = 0.1, alpha = 0.5) +
+    labs(title = "Top speed by train category")
+```
+
+What does the tibble tell you? What does the plot tell you?
+
+## Close inspection of most relevant variables
+
+### What is the unique identifier in our data?
+
+```{r}
+length(unique(routes_df$id))
+length(unique(routes_df$name))
+```
+
+### Is there anything weird going on with fame rank?
+
+```{r}
+range(routes_df$fame_rank)
+length(unique(routes_df$fame_rank))
+```
+
+### What is the distribution of opening year? 
+
+```{r}
+summary(routes_df$opened)
+hist(routes_df$opened, breaks = 30)
+```
+
+### How many unique origin and destinations are there in the data set?
+
+```{r}
+length(unique(routes_df$from))
+length(unique(routes_df$to))
+```
+
+#### Let's take a look at some of the origin cities
+
+```{r}
+sort(unique(routes_df$from)) |> head(30)
+```
+
+### What does the countries variable look like? How many countries are in a typical route?
+
+```{r}
+head(routes_df$countries)
+
+routes_df |>
+    count(countries, sort = TRUE)
+```
+
+### What about the duration variable?
+
+```{r}
+summary(routes_df$duration)
+hist(routes_df$duration, breaks = 30)
+```
+
+We can't look at the distribution of a character variable- this variable needs cleaning!
+
+### And the distance variable?
+
+```{r}
+hist(routes_df$distance_km)
+```
+
+Very long tail. One is nearly double the others, so remove that:
+
+```{r}
+hist(routes_df$distance_km, 
+     xlim = c(0,5000))
+```
+
+Still a long tail...
+
+```{r}
+shorties <- routes_df |> 
+  filter(distance_km < 1000)
+
+hist(shorties$distance_km)
+  
+```
+
+## Possible cleaning steps 
+
+- Standardize `from`/`to` — inconsistent formatting likely inflates unique counts
+
+- Parse `duration` into minutes/hours
+
+- Clean `countries` and `countries_iso` to remove \| separators; maybe countries per route?
+
+- Decide how to handle `pax_per_year` NAs
+
+## Can we answer our questions with the data as is?
+
+- *History*: yes
+
+- *Route – origin/destination*: possibly! character variables might always have some minor differences (white space, spelling variations)
+
+- *Route – countries*: no, current counts don't reflect actual countries per route
+
+- *Speed*: yes, clean and usable now
+
+- *Distance*: partially, usable, but we have to think about outliers
+
+- *Duration*: no, character variable
+
+#### 
