@@ -10,7 +10,7 @@ Throughout this workshop series, we'll be answering a core question using this t
 
 - What makes a train route famous?
 
-  - History?
+  - Age of route?
 
   - Route? i.e., origin, destination, countries traveled through
 
@@ -19,8 +19,6 @@ Throughout this workshop series, we'll be answering a core question using this t
 Before we can answer those questions, we need to explore our data!
 
 # Load packages
-
-@Katie we will have covered install and installed relevant packages already, right?
 
 ```{r}
 library(tidyverse)
@@ -127,7 +125,7 @@ range(routes_df$fame_rank)
 length(unique(routes_df$fame_rank))
 ```
 
-### What is the distribution of opening year? 
+### What is the distribution of opening year?
 
 ```{r}
 summary(routes_df$opened)
@@ -165,6 +163,8 @@ hist(routes_df$duration, breaks = 30)
 
 We can't look at the distribution of a character variable- this variable needs cleaning!
 
+### Let's look closer at the duration variable!
+
 ### And the distance variable?
 
 ```{r}
@@ -188,7 +188,7 @@ hist(shorties$distance_km)
   
 ```
 
-## Possible cleaning steps 
+## Possible cleaning steps
 
 - Standardize `from`/`to` — inconsistent formatting likely inflates unique counts
 
@@ -200,7 +200,7 @@ hist(shorties$distance_km)
 
 ## Can we answer our questions with the data as is?
 
-- *History*: yes
+- *Age of route:* yes
 
 - *Route – origin/destination*: possibly! character variables might always have some minor differences (white space, spelling variations)
 
