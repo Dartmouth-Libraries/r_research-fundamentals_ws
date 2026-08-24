@@ -1,12 +1,13 @@
 ---
 title: "Data Cleaning"
+author: Katie Owers Bonner and Emily Myers
 format: html
 editor: visual
 ---
 
-# Intro
+# Data Cleaning Setup
 
-Remember our core questions about this train route data:
+## Let's review our core questions about this train route data:
 
 - What makes a train route famous?
 
@@ -16,9 +17,9 @@ Remember our core questions about this train route data:
 
   - Travel experience, e.g., speed, distance, train type
 
-Now that we know more about this data, we can clean/wrangle it to get it ready for analysis. Remember the issues we identified as good candidates for data cleaning:
+Now that we know more about this data, we can clean/wrangle it to get it ready for the analysis that will let us answer these questions. Remember the issues we identified as good candidates for data cleaning:
 
-## Possible cleaning steps
+## What are the possible cleaning steps we discovered through EDA?
 
 - Standardize `from`/`to` — inconsistent formatting likely inflates unique counts
 
@@ -28,30 +29,76 @@ Now that we know more about this data, we can clean/wrangle it to get it ready f
 
 - Decide how to handle `pax_per_year` NAs
 
-# Load packages
+## How do we turn these questions and EDA findings into a coherent data cleaning plan?
+
+Whiteboard.
+
+# Common Data Science Operations in Tidyverse
+
+Tidyverse is the most commonly used R library (and syntax) used for data cleaning/wrangling. Here are some of the most common operations in both Base R and Tidyverse syntax.
+
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| Task                               | Base R                                              | Tidyverse (R)                   |
++====================================+=====================================================+=================================+
+| **Sort table by column**           | sort(df\$col)                                       | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | arrange(col)                    |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Filter rows**                    | df\[df\[col\] \> 0, \]                              | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | filter(col \> 0)                |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Subset columns**                 |                                                     | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | select(col)                     |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Rename an existing column**      | names(df)\[names(df) == "old_name"\] \<- "new_name" | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | rename(new_name = old_name)     |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Create a new column**            | df\$square = df\[col\] \^2                          | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | mutate(square = col \^ 2)       |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Perform calculation on column**  | sum(df\$col)                                        | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | summarise(sumcol = sum(col))    |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Delete duplicate rows**          | df\[!duplicated(df), \]                             | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    |                                                     | distinct()                      |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Group/Apply/Combine**            | by(df, col, sum(x))                                 | df \|\>                         |
+|                                    |                                                     |                                 |
+|                                    | ???                                                 | group_by(col) \|\>              |
+|                                    |                                                     |                                 |
+|                                    |                                                     | summarise(groupsum = sum(col2)) |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+| **Reshape data from wide to long** | *melt()*                                            | *use pivot_longer()*            |
++------------------------------------+-----------------------------------------------------+---------------------------------+
+
+# Setup
+
+## Load packages
 
 ```{r}
 library(tidyverse) 
 library(here)
 ```
 
-# Import data
+## Import data
 
 ```{r}
 routes_df <- read.csv(here("data", "train_router", "routes.csv"))
 ```
 
-# Clean the data
-
-Let's refresh quickly on the columns in our data:
+## Let's refresh quickly on the columns in our data:
 
 ```{r}
 colnames(routes_df)
 ```
 
-## More detailed Tidyverse intro - covered how much in EDA?
-
-## Rename to/from
+# Rename an existing variable
 
 Let's rename "from" and "to" to the clearer terms "origin" and "destination"
 
@@ -61,7 +108,9 @@ routes_df <- routes_df |>
            destination = to)
 ```
 
-## Mutate kmph to mph?
+# Create a new variable
+
+Let's change the kilometer columns to miles
 
 ```{r}
 routes_df <- routes_df |> 
@@ -69,54 +118,104 @@ routes_df <- routes_df |>
            top_speed_mph = top_speed_kmh * 0.621371)
 ```
 
-## Subset with select() - remove highlight or url?
+# Filter the dataset
 
-There are a few columns we don't need, so we can remove them
-
-```{r}
-routes_df <- routes_df |> 
-    select(-url)
-```
-
-Say we wanted to delete the kilometers version of the distance and speed:
+Let's restrict our analysis to routes less than 1000 kilometers, since there are some outliers in length.
 
 ```{r}
 routes_df <- routes_df |> 
-    select(-distance_km, -top_speed_kmh)
+    filter(distance_km <= 1000)
 ```
 
-## Filter something (top 100 routes?)
+# Maybe start with a simpler column than duration? Creating number of countries variable?
 
-What if we wanted to focus on the top 100 routes?
+# Clean the duration column
+
+## Let's start by inspecting unique values - what are we dealing with?
 
 ```{r}
-routes_top_100 <- routes_df |> 
-    filter(fame_rank <= 100)
+unique(routes_df$duration) 
 ```
 
-## Duration
+There are a couple issues here. We need to break this into steps!
 
-Discuss ways to fix this
+## Strip special characters (\~) and (hidden) whitespaces
 
-Steps
+```{r}
+routes_df <- routes_df |>
+    mutate(
+        duration_clean = duration,
+        # remove approx symbols
+        duration_clean = str_remove_all(duration_clean, "≈|~"),
+        # trim extra whitespace
+        duration_clean = str_squish(duration_clean)
+    )
+```
 
-- Drop extra text at the end (eg daylight only)
+## Inspect again- did we miss anything?
 
-- Add column for approximation? Or just drop it?
+```{r}
+unique(routes_df$duration_clean)
+```
 
-- strip extra white space
+## Separate time units into a column each for days, hours, and minutes
 
-- Parse h/min/day
+```{r}
+routes_df <- routes_df |>
+    mutate(
+        days_part    = as.numeric(str_extract(duration_clean, "\\d+(?=\\s*day)")),
+        hours_part   = as.numeric(str_extract(duration_clean, "\\d+(?=\\s*h\\b)")),
+        minutes_part = as.numeric(str_extract(duration_clean, "\\d+(?=\\s*min)"))
+    )
+```
 
-- Combine single column
+## Replace NAs with 0 and combine into total hours
 
-- Check variable type
+```{r}
+routes_df <- routes_df |>
+    mutate(
+        days_part    = replace_na(days_part, 0),
+        hours_part   = replace_na(hours_part, 0),
+        minutes_part = replace_na(minutes_part, 0),
+        duration_hours = days_part * 24 + hours_part  + minutes_part / 60
+    )
+```
+
+## Drop columns made for cleaning
+
+```{r}
+routes_df <- routes_df %>%
+    select(-duration_clean, -days_part, -hours_part, -minutes_part)
+```
+
+## Check our output to make sure it looks reasonable
+
+```{r}
+routes_df |> 
+    select(duration, duration_hours) |> 
+    slice_sample(n=10)
+```
+
+## Now we can use numeric summaries and figures!
+
+```{r}
+summary(routes_df$duration_hours)
+```
+
+```{r}
+hist(routes_df$duration_hours, breaks = 30)
+```
 
 # Write out the cleaned file
 
-Be clear with name or "clean" folder
+Be clear with the filename or putting the data in a "clean" folder.
 
 ```{r}
 write.csv(routes_clean,
-          here("data","train_routes_clean.csv"))
+          here("data","train_router", "routes_clean.csv"),
+          row.names = FALSE)
 ```
+
+# Ok, so can we actually answer our questions?
+
+(separate script?)
