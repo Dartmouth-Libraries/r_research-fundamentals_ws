@@ -43,13 +43,56 @@ routes_df <- read.csv(here("data", "train_router", "routes.csv"))
 
 # Clean the data
 
+Let's refresh quickly on the columns in our data:
+
+```{r}
+colnames(routes_df)
+```
+
+## More detailed Tidyverse intro - covered how much in EDA?
+
 ## Rename to/from
+
+Let's rename "from" and "to" to the clearer terms "origin" and "destination"
+
+```{r}
+routes_df <- routes_df |> 
+    rename(origin = from,
+           destination = to)
+```
 
 ## Mutate kmph to mph?
 
+```{r}
+routes_df <- routes_df |> 
+    mutate(distance_mi = distance_km * 0.621371,
+           top_speed_mph = top_speed_kmh * 0.621371)
+```
+
 ## Subset with select() - remove highlight or url?
 
+There are a few columns we don't need, so we can remove them
+
+```{r}
+routes_df <- routes_df |> 
+    select(-url)
+```
+
+Say we wanted to delete the kilometers version of the distance and speed:
+
+```{r}
+routes_df <- routes_df |> 
+    select(-distance_km, -top_speed_kmh)
+```
+
 ## Filter something (top 100 routes?)
+
+What if we wanted to focus on the top 100 routes?
+
+```{r}
+routes_top_100 <- routes_df |> 
+    filter(fame_rank <= 100)
+```
 
 ## Duration
 
@@ -72,3 +115,8 @@ Steps
 # Write out the cleaned file
 
 Be clear with name or "clean" folder
+
+```{r}
+write.csv(routes_clean,
+          here("data","train_routes_clean.csv"))
+```
