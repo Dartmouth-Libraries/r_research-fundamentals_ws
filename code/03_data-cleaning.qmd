@@ -1,0 +1,74 @@
+---
+title: "Data Cleaning"
+format: html
+editor: visual
+---
+
+# Intro
+
+Remember our core questions about this train route data:
+
+- What makes a train route famous?
+
+  - Age of route?
+
+  - Route? i.e., origin, destination, countries traveled through
+
+  - Travel experience, e.g., speed, distance, train type
+
+Now that we know more about this data, we can clean/wrangle it to get it ready for analysis. Remember the issues we identified as good candidates for data cleaning:
+
+## Possible cleaning steps
+
+- Standardize `from`/`to` — inconsistent formatting likely inflates unique counts
+
+- Parse `duration` into minutes/hours
+
+- Clean `countries` and `countries_iso` to remove \| separators; maybe countries per route?
+
+- Decide how to handle `pax_per_year` NAs
+
+# Load packages
+
+```{r}
+library(tidyverse) 
+library(here)
+```
+
+# Import data
+
+```{r}
+routes_df <- read.csv(here("data", "train_router", "routes.csv"))
+```
+
+# Clean the data
+
+## Rename to/from
+
+## Mutate kmph to mph?
+
+## Subset with select() - remove highlight or url?
+
+## Filter something (top 100 routes?)
+
+## Duration
+
+Discuss ways to fix this
+
+Steps
+
+- Drop extra text at the end (eg daylight only)
+
+- Add column for approximation? Or just drop it?
+
+- strip extra white space
+
+- Parse h/min/day
+
+- Combine single column
+
+- Check variable type
+
+# Write out the cleaned file
+
+Be clear with name or "clean" folder
