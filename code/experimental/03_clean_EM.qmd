@@ -1,0 +1,147 @@
+---
+title: "Session x: Clean train data"
+author: Katie Owers Bonner and Emily Myers
+format: html
+editor: visual
+---
+
+## Notes from EDA workshop
+
+## Possible cleaning steps
+
+- Standardize `from`/`to` — inconsistent formatting likely inflates unique counts
+
+- Parse `duration` into minutes/hours
+
+- Clean `countries` and `countries_iso` to remove \| separators; maybe countries per route?
+
+- Decide how to handle `pax_per_year` NAs
+
+Maybe we focus on duration?
+
+From last intersession- not sure python is relevant? but could do base R and tidyverse
+
+# Common Data Science Operations in Tidyverse
+
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| Task                               | Python - Pandas                          | Base R                     | Tidyverse (R)                   |
++====================================+==========================================+============================+=================================+
+| **Sort table by column**           | df.sort_values('col')                    | sort(df\$col)              | df \|\>                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | arrange(col)                    |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Filter rows**                    | df.loc\[df\['col'\]\>0,:\]               | df\[df\[col\] \> 0, \]     | df \|\>                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | filter(col \> 0)                |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Subset columns**                 |                                          |                            | df \|\>                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | select(col)                     |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Create a new column**            | df.loc\[:, "square"\] = df\[col\] \*\* 2 | df\$square = df\[col\] \^2 | df %\>%                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | mutate(square = col \^ 2)       |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Perform calculation on column**  | sum(df\["col"\])                         | sum(df\$col)               | df \|\>                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | summarise(sumcol = sum(col))    |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Delete duplicate rows**          | df.drop_duplicates()                     | df\[!duplicated(df), \]    | df \|\>                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | distinct()                      |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Group/Apply/Combine**            | df.groupby("col").sum()                  | by(df, col, sum(x))        | df \|\>                         |
+|                                    |                                          |                            |                                 |
+|                                    |                                          | ???                        | group_by(col) \|\>              |
+|                                    |                                          |                            |                                 |
+|                                    |                                          |                            | summarise(groupsum = sum(col2)) |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+| **Reshape data from wide to long** | *pd.wide_to_long()*                      | *melt()*                   | *use pivot_longer()*            |
++------------------------------------+------------------------------------------+----------------------------+---------------------------------+
+
+: Load packages
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+# Import data
+
+```{r}
+routes_df <- read.csv(here("data", "train_router", "routes.csv"))
+```
+
+# Maybe start with a simpler column than duration? Creating number of countries variable? 
+
+# Clean duration column
+
+## start by inspecting unique values- what are we dealing with?
+
+```{r}
+unique(routes_df$duration)
+
+```
+
+We need to break this into steps!
+
+## Strip special characters (\~), parenthetical notes, specific phrases, e.g., "round trip", "daylight only", anything after a "·"
+
+```{r}
+routes_df <- routes_df |>
+    mutate(
+        duration_clean = duration,
+        # remove approx symbols
+        duration_clean = str_remove_all(duration_clean, "≈|~"),
+        # remove parenthetical notes, e.g. "(round trip)"
+        duration_clean = str_remove(duration_clean, "\\(.*\\)"),
+        # remove anything after a "·", e.g. "· 2 trains", "· change at Neussargues"
+        duration_clean = str_remove(duration_clean, "·.*$"),
+        # remove specific phrases
+        duration_clean = str_remove(duration_clean, "round trip"),
+        duration_clean = str_remove(duration_clean, "daylight only"),
+        # remove stray commas left behind (e.g. "2 days,")
+        duration_clean = str_remove_all(duration_clean, ","),
+        # trim extra whitespace
+        duration_clean = str_squish(duration_clean)
+    )
+
+```
+
+## Inspect again- did we miss anything?
+
+```{r}
+unique(routes_df$duration_clean)
+```
+
+## Pull out unit (days, hours, minutes)
+
+```{r}
+routes_df <- routes_df |>
+    mutate(
+        days_part    = as.numeric(str_extract(duration_clean, "\\d+(?=\\s*day)")),
+        hours_part   = as.numeric(str_extract(duration_clean, "\\d+(?=\\s*h\\b)")),
+        minutes_part = as.numeric(str_extract(duration_clean, "\\d+(?=\\s*min)"))
+    )
+```
+
+## Replace NAs with 0 and combine into total minutes- is minutes the right unit? hours might be better?
+
+```{r}
+routes_df <- routes_df |>
+    mutate(
+        days_part    = replace_na(days_part, 0),
+        hours_part   = replace_na(hours_part, 0),
+        minutes_part = replace_na(minutes_part, 0),
+        duration_minutes = days_part * 24 * 60 + hours_part * 60 + minutes_part
+    )
+```
+
+## Drop columns made for cleaning
+
+```{r}
+routes_df <- routes_df %>%
+    select(-duration_clean, -days_part, -hours_part, -minutes_part)
+```
+
+# Now we can summarize duration!
