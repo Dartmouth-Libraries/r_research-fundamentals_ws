@@ -72,7 +72,7 @@ library(here)
 routes_df <- read.csv(here("data", "train_router", "routes.csv"))
 ```
 
-# Maybe start with a simpler column than duration? Creating number of countries variable? 
+# Maybe start with a simpler column than duration? Creating number of countries variable?
 
 # Clean duration column
 
@@ -93,15 +93,6 @@ routes_df <- routes_df |>
         duration_clean = duration,
         # remove approx symbols
         duration_clean = str_remove_all(duration_clean, "≈|~"),
-        # remove parenthetical notes, e.g. "(round trip)"
-        duration_clean = str_remove(duration_clean, "\\(.*\\)"),
-        # remove anything after a "·", e.g. "· 2 trains", "· change at Neussargues"
-        duration_clean = str_remove(duration_clean, "·.*$"),
-        # remove specific phrases
-        duration_clean = str_remove(duration_clean, "round trip"),
-        duration_clean = str_remove(duration_clean, "daylight only"),
-        # remove stray commas left behind (e.g. "2 days,")
-        duration_clean = str_remove_all(duration_clean, ","),
         # trim extra whitespace
         duration_clean = str_squish(duration_clean)
     )
@@ -125,7 +116,7 @@ routes_df <- routes_df |>
     )
 ```
 
-## Replace NAs with 0 and combine into total minutes- is minutes the right unit? hours might be better?
+## Replace NAs with 0 and combine into total hours
 
 ```{r}
 routes_df <- routes_df |>
@@ -133,7 +124,7 @@ routes_df <- routes_df |>
         days_part    = replace_na(days_part, 0),
         hours_part   = replace_na(hours_part, 0),
         minutes_part = replace_na(minutes_part, 0),
-        duration_minutes = days_part * 24 * 60 + hours_part * 60 + minutes_part
+        duration_hours = days_part * 24 + hours_part  + minutes_part / 60
     )
 ```
 
