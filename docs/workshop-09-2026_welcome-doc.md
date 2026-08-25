@@ -74,17 +74,17 @@ above.
 
 But do you have a computational research or data-intensive project you
 need help with, but not sure who to ask? Contact our department at
-<Research.Facilitation@dartmouth.edu>.To learn more about us visit our
-webpage.
+<Research.Facilitation@dartmouth.edu>.To learn more about us visit [our
+webpage](https://www.library.dartmouth.edu/about-us/dartmouth-libraries/departments/research-facilitation).
 
 ## Facilities: Dartmouth Libraries
 
-**The LINK (Berry 180A)**
+### The LINK (Berry 180A)
 
 The LINK is found on Berry Floor 1 directly across from the circulation
 desk (to the east)
 
-### Accessible entrance\*\*
+### Accessible entrance
 
 Handicap parking and an accessible entrance may be found on the East
 side of Baker (on College Ave., see the library [Plan your
