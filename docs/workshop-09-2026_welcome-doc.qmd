@@ -24,5 +24,41 @@ Download R and RStudio following the [instructions here](https://rstudio-educati
 - The Workshop Github repository:
   - [repository link](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws)
   - Direct Download link: [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
+- [RESOURCE LIST]
 
 ![QRcode](../images/f26_research-fundamentals.svg)
+
+## Instructors
+
+### EMILY MYERS
+
+Research Data Librarian, Research Facilitation (Dartmouth Libraries)
+**Meet with me**: [dartgo.org/emily-cal](https://dartgo.org/emily-cal)
+**Contact me**: [emily.h.myers@dartmouth.edu](mailto:emily.h.myers@dartmouth.edu)
+
+
+### KATIE OWERS BONNER
+
+Senior Research Data Science Specialist, Research Facilitation (Dartmouth Libraries)
+**Meet with me**: [dartgo.org/placeholder](https://dartgo.org/placeholder)
+**Contact me**: 
+
+
+### JEREMY MIKECZ
+
+Ph.D., University of California-Davis, 2017
+Research Data Science Specialist, Research Facilitation (Dartmouth Libraries)
+
+**Specialties**: bibliometrics, data visualization, digital humanities, GIS & digital mapping, programming in Python & R, text analysis / handwritten text recognition
+
+**Meet with me**: [dartgo.org/jeremy](https://dartgo.org/jeremy)
+**Contact me**: [jeremy.m.mikecz@dartmouth.edu](mailto:jeremy.m.mikecz@dartmouth.edu)
+
+## Research Facilitation
+
+You can contact your instructors directly at the email addresses listed above. 
+
+But do you have a computational research or data-intensive project you need help with, but not sure who to ask? Contact our department at [Research.Facilitation@dartmouth.edu](mailto:Research.Facilitation@dartmouth.edu).To learn more about us visit our webpage. 
+
+
+### Contact us
