@@ -64,7 +64,8 @@ Follow the instructions in [setup.qmd](setup.qmd) to:
 
 ## 8. Overview of Materials
 
-1. Notebooks / code
+1. 2026 Workshop - [Welcome Document]()
+2. Notebooks / code
 2. Slides
 3. Other instructional materials
 4. Data
