@@ -31,6 +31,17 @@ head(routes_df)
 ```
 
 ```{r}
+dim(routes_df)
+```
+
+```{r}
+sample_routes_df <- routes_df |>
+    slice_sample(n=20)
+
+write_csv(sample_routes_df, here("data/train_router/sample20_routes.csv"))
+```
+
+```{r}
 routes_df |>
     slice_min(fame_rank, n = 10) |>
     select(name, from, to, distance_km)
@@ -46,4 +57,16 @@ ggplot(gdf) +
     geom_sf(aes(color = category)) +
     theme_minimal() +
     theme(legend.position = "right")
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```

@@ -199,7 +199,7 @@ dupes_1 <- titles_df |>
 
 ## Merge or Link Data
 
-First, merge the Titles and HathiTrust Metadata tables
+First, merge the Titles and HathiTrust Metadata tables. We can see from the summary tables and charts above that the
 
 ```{r}
 
