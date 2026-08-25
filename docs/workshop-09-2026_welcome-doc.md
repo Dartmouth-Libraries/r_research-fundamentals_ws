@@ -1,10 +1,13 @@
-# workshop-09-2026_welcome-doc
+# Welcome Document
 Dartmouth Libraries
 
 # Concepts to Code: Building Good Computational Research Practices with R
 
-Sept 2 & 3, 2026 Berry 180A (The LINK) Baker-Berry Library, Dartmouth
-College
+Sept 2 & 3, 2026
+
+Berry 180A (The LINK)
+
+Baker-Berry Library, Dartmouth College
 
 ## Before the Workshop Begins
 
@@ -22,39 +25,46 @@ here](https://rstudio-education.github.io/hopr/starting.html).
 
 - [Registration Page](https://libcal.dartmouth.edu/event/17272420) with
   workshop description. *Note: register for both days!*
-- The Workshop Github repository:
-  - [repository
-    link](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws)
-  - Direct Download link:
-    [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
+- [The Workshop Github
+  repository](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws)
+- Direct Download link:
+  [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
+  - <img src="../images/f26_research-fundamentals.svg" width="50%"/>
 - \[RESOURCE LIST\]
-
-<img src="../images/f26_research-fundamentals.svg" width="50%"/>
 
 ## Instructors
 
 ### EMILY MYERS
 
 Research Data Librarian, Research Facilitation (Dartmouth Libraries)
+
 **Meet with me**: [dartgo.org/emily-cal](https://dartgo.org/emily-cal)
+
 **Contact me**: <emily.h.myers@dartmouth.edu>
 
 ### KATIE OWERS BONNER
 
 Senior Research Data Science Specialist, Research Facilitation
-(Dartmouth Libraries) **Meet with me**:
-[dartgo.org/placeholder](https://dartgo.org/placeholder) **Contact me**:
+(Dartmouth Libraries)
+
+**Meet with me**:
+[dartgo.org/placeholder](https://dartgo.org/placeholder)
+
+**Contact me**: <Katie.Owers.Bonner@dartmouth.edu>
 
 ### JEREMY MIKECZ
 
-Ph.D., University of California-Davis, 2017 Research Data Science
-Specialist, Research Facilitation (Dartmouth Libraries)
+Ph.D., University of California-Davis, 2017
+
+Research Data Science Specialist, Research Facilitation (Dartmouth
+Libraries)
 
 **Specialties**: bibliometrics, data visualization, digital humanities,
 GIS & digital mapping, programming in Python & R, text analysis /
 handwritten text recognition
 
 **Meet with me**: [dartgo.org/jeremy](https://dartgo.org/jeremy)
+
 **Contact me**: <jeremy.m.mikecz@dartmouth.edu>
 
 ## Research Facilitation
