@@ -26,7 +26,7 @@ Download R and RStudio following the [instructions here](https://rstudio-educati
   - Direct Download link: [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
 - \[RESOURCE LIST\]
 
-![QRcode](../images/f26_research-fundamentals.svg)
+<img src="../images/f26_research-fundamentals.svg" width="50%"/>
 
 ## Instructors
 
@@ -72,7 +72,7 @@ Handicap parking and an accessible entrance may be found on the East side of Bak
 
   - In the stairwell behind the former Baker Café
   - In the Stacks, there are multiple near the elevator on the following floors (Basement + Floors 4, 5, and 6)
-  
+
 ## Schedule
 
 This workshop pairs Concepts lessons with Coding lessons.
@@ -83,23 +83,22 @@ In the **hands-on Coding lessons** ("b" sessions), you will apply and practice w
 
 ### Day 1 (Wed. Sept 2)
 
-+ 9:00 - 9:15 Welcome / Introductions / Get to know the people around you
-+ Session 1a: Research Questions & Project Design (9:15 - 10:15am)
-+ *Break*
-+ Session 1b: Starting a Research Project in R (10:30 - 12:00)
-+ *Lunch*
-+ Session 2a: Exploring your Data (12:45 - 1:45pm)
-+ *Break*
-+ Session 2b: Exploratory Data Analysis in R (2:00 - 3:30pm)
-
+- 9:00 - 9:15 Welcome / Introductions / Get to know the people around you
+- Session 1a: Research Questions & Project Design (9:15 - 10:15am)
+- *Break*
+- Session 1b: Starting a Research Project in R (10:30 - 12:00)
+- *Lunch*
+- Session 2a: Exploring your Data (12:45 - 1:45pm)
+- *Break*
+- Session 2b: Exploratory Data Analysis in R (2:00 - 3:30pm)
 
 ### Day 2 (Thurs. Sept 3)
 
-+ 9:00 - 9:15 Welcome / Intros
-+ Session 3a: Introduction to Data Cleaning for Analysis and Reproducible Research (9:15 - 10:15am)
-+ *Break*
-+ Session 3b: Data Cleaning with R (10:30 - 12:00)
-+ *Lunch*
-+ Session 4a: Computational / Reproducible Research Best Practices (12:45 - 1:45pm)
-+ *Break*
-+ Session 4b: Applying Reproducible Research Best Practices to your Own Projects in R (2:00 - 3:30pm)
+- 9:00 - 9:15 Welcome / Intros
+- Session 3a: Introduction to Data Cleaning for Analysis and Reproducible Research (9:15 - 10:15am)
+- *Break*
+- Session 3b: Data Cleaning with R (10:30 - 12:00)
+- *Lunch*
+- Session 4a: Computational / Reproducible Research Best Practices (12:45 - 1:45pm)
+- *Break*
+- Session 4b: Applying Reproducible Research Best Practices to your Own Projects in R (2:00 - 3:30pm)

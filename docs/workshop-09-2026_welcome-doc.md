@@ -29,7 +29,7 @@ here](https://rstudio-education.github.io/hopr/starting.html).
     [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
 - \[RESOURCE LIST\]
 
-![QRcode](../images/f26_research-fundamentals.svg)
+<img src="../images/f26_research-fundamentals.svg" width="50%"/>
 
 ## Instructors
 
