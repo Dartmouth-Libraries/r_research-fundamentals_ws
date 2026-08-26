@@ -5,6 +5,12 @@ format: html
 editor: visual
 ---
 
+## Tasks
+
+1.  [ ] play around with Post-45 data; merge + analysis
+2.  [ ] finish planning code (4b)
+3.  [ ] finish presentation (4a): data principles; review [OSCARRs workshop presentation](https://docs.google.com/presentation/d/1pGPngAtuyEAwPG34o9OEtY57szDTz4eLUBfce3qOP-I/edit?slide=id.g2d79854b024_0_31#slide=id.g2d79854b024_0_31).
+
 If you have your own data and a general project question, you may use the instructions below to set up your own project.
 
 If not, no problem. You can use the data provided for the workshop in the workshop folder: `data/post45_books`.
@@ -72,3 +78,5 @@ This is for the Post-45 Book Data. For your own project, adjust the path and fil
 ## 5. Coding Assistance –\> More Complex Visualization
 
 ## 6. Cleaning (separate nb??)
+
+### 6b. Merging Data
