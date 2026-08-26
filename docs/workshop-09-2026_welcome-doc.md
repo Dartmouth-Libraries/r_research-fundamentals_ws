@@ -54,8 +54,6 @@ Senior Research Data Science Specialist, Research Facilitation (Dartmouth Librar
 
 ### JEREMY MIKECZ
 
-Ph.D., University of California-Davis, 2017
-
 Research Data Science Specialist, Research Facilitation (Dartmouth Libraries)
 
 **Specialties**: bibliometrics, data visualization, digital humanities, GIS & digital mapping, programming in Python & R, text analysis / handwritten text recognition
