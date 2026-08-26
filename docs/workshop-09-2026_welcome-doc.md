@@ -41,6 +41,8 @@ Download R and RStudio following the [instructions here](https://rstudio-educati
 
 Research Data Librarian, Research Facilitation (Dartmouth Libraries)
 
+**Specialties**: quantitative social sciences, causal inference, data analysis in R, data visualization
+
 **Meet with me**: [dartgo.org/emily-cal](https://dartgo.org/emily-cal)
 
 **Contact me**: [emily.h.myers\@dartmouth.edu](mailto:emily.h.myers@dartmouth.edu){.email}
