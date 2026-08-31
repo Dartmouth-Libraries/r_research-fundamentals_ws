@@ -1,7 +1,9 @@
 ---
 title: "Welcome Document"
 author: "Dartmouth Libraries"
-format: pdf
+format:
+  pdf: default
+  gfm: default
 ---
 
 # Concepts to Code: Building Good Computational Research Practices with R
