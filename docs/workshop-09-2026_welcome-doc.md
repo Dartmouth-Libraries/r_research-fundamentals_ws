@@ -1,6 +1,6 @@
-------------------------------------------------------------------------
-
-editor_options: markdown: wrap: 72 ---
+---
+editor_options: markdown: wrap: 72
+---
 
 # Welcome Document
 
