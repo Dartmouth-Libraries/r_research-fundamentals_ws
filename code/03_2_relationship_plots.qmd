@@ -1,0 +1,91 @@
+---
+title: "What Predicts Train Fame?"
+author: "Emily Myers"
+format: html
+editor: visual
+---
+
+# Working with our cleaned data!
+
+## Our core questions about this train route data were?
+
+- What makes a train route famous?
+
+  - Age of route?
+
+  - Route? i.e., origin, destination, countries traveled through
+
+  - Travel experience, e.g., speed, distance, train type
+
+Now that we have a (cleaner) data set, let's look into some of the questions!
+
+# Setup
+
+## Load packages
+
+```{r}
+library(tidyverse) 
+library(here)
+```
+
+## Import data
+
+```{r}
+routes_df <- read_csv(here("data", "train_router", "routes_clean.csv"))
+```
+
+# Explore Relationships
+
+## What is the relationship between duration and fame rank?
+
+### Scatter plot
+
+```{r}
+# Duration vs fame rank
+routes_clean %>%
+    ggplot(aes(x = duration_hours, y = fame_rank)) +
+    geom_point(alpha = 0.6, color = "steelblue") +
+    geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+    labs(
+        title = "Relationship Between Route Duration and Fame Rank",
+        x = "Duration (hours)",
+        y = "Fame Rank"
+    ) +
+    theme_minimal()
+```
+
+### Get rid of outliers
+
+```{r}
+# Duration vs fame rank (zoomed to under 30 hours)
+routes_clean %>%
+    ggplot(aes(x = duration_hours, y = fame_rank)) +
+    geom_point(alpha = 0.6, color = "steelblue") +
+    geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+    coord_cartesian(xlim = c(0, 30)) +
+    labs(
+        title = "Relationship Between Route Duration and Fame Rank",
+        subtitle = "Zoomed to routes under 50 hours (outliers excluded from view)",
+        x = "Duration (hours)",
+        y = "Fame Rank"
+    ) +
+    theme_minimal()
+```
+
+## What about age of route and fame rank?
+
+### Scatter plot
+
+```{r}
+# Year opened vs fame rank
+routes_clean %>%
+    ggplot(aes(x = opened, y = fame_rank)) +
+    geom_point(alpha = 0.6, color = "darkgreen") +
+    geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+    labs(
+        title = "Relationship Between Year Opened and Fame Rank",
+        x = "Year Opened",
+        y = "Fame Rank"
+    ) +
+    theme_minimal()
+```

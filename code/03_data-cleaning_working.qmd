@@ -21,17 +21,7 @@ Now that we know more about this data, we can clean/wrangle it to get it ready f
 
 ## What are the possible cleaning steps we discovered through EDA?
 
-- Standardize `from`/`to` — inconsistent formatting likely inflates unique counts
-
-- Parse `duration` into minutes/hours
-
-- Clean `countries` and `countries_iso` to remove \| separators; maybe countries per route?
-
-- Decide how to handle `pax_per_year` NAs
-
 ## How do we turn these questions and EDA findings into a coherent data cleaning plan?
-
-Whiteboard.
 
 # Common Data Science Operations in Tidyverse
 
@@ -81,59 +71,25 @@ Tidyverse is the most commonly used R library (and syntax) used for data cleanin
 
 ## Load packages
 
-```{r}
-library(tidyverse) 
-library(here)
-```
-
 ## Import data
 
-```{r}
-routes_df <- read.csv(here("data", "train_router", "routes.csv"))
-```
-
 ## Let's refresh quickly on the columns in our data:
-
-```{r}
-colnames(routes_df)
-```
 
 # Rename an existing variable
 
 Let's rename "from" and "to" to the clearer terms "origin" and "destination"
 
-```{r}
-routes_df <- routes_df |> 
-    rename(origin = from,
-           destination = to)
-```
-
 # Create a new variable
 
 Let's change the kilometer columns to miles
-
-```{r}
-routes_df <- routes_df |> 
-    mutate(distance_mi = distance_km * 0.621371,
-           top_speed_mph = top_speed_kmh * 0.621371)
-```
 
 # Filter the dataset
 
 Let's restrict our analysis to routes less than 1000 kilometers, since there are some outliers in length.
 
-```{r}
-routes_df <- routes_df |> 
-    filter(distance_km <= 1000)
-```
-
 # Clean the duration column
 
 ## Let's start by inspecting unique values - what are we dealing with?
-
-```{r}
-unique(routes_df$duration) 
-```
 
 There are a couple issues here. We need to break this into steps!
 
@@ -152,10 +108,6 @@ routes_df <- routes_df |>
 
 ## Inspect again- did we miss anything?
 
-```{r}
-unique(routes_df$duration_clean)
-```
-
 ## Separate time units into a column each for days, hours, and minutes
 
 ```{r}
@@ -169,52 +121,14 @@ routes_df <- routes_df |>
 
 ## Replace NAs with 0 and combine into total hours
 
-```{r}
-routes_df <- routes_df |>
-    mutate(
-        days_part    = replace_na(days_part, 0),
-        hours_part   = replace_na(hours_part, 0),
-        minutes_part = replace_na(minutes_part, 0),
-        duration_hours = days_part * 24 + hours_part  + minutes_part / 60
-    )
-```
-
 ### Check it worked
-
-```{r}
-# Any rows where all three components are 0 (something didn't parse)?
-routes_df %>% filter(days_part == 0 & hours_part == 0 & minutes_part == 0) %>% distinct(duration_clean)
-```
-
-```{r}
-routes_df |> select(duration, duration_hours) |> slice_sample(n=10)
-```
 
 ## Create a cleaned version without columns made for cleaning
 
-```{r}
-routes_clean <- routes_df %>%
-    select(-duration_clean, -duration, -days_part, -hours_part, -minutes_part)
-```
-
 ## Now we can use numeric summaries and figures!
-
-```{r}
-summary(routes_clean$duration_hours)
-```
-
-```{r}
-hist(routes_clean$duration_hours, breaks = 30)
-```
 
 # Write out the cleaned file
 
 Be clear with the filename or putting the data in a "clean" folder.
-
-```{r}
-write.csv(routes_clean,
-          here("data","train_router", "routes_clean.csv"),
-          row.names = FALSE)
-```
 
 # Ok, so can we actually answer our questions?

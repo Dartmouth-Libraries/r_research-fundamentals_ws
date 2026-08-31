@@ -83,7 +83,33 @@ There are a lot of NAs in `pax_per_year`!
 
 ### Quality check- do high-speed trains go the fastest? Let's look in two ways.
 
-#### Tibble
+#### 1. Tibble
+
+Here we're going to be using the group_by command from tidyverse. Let's look at how it works before we actually create a summary table by category of train. We'll start by just summarizing the number of trains in each category.
+
+```{r}
+routes_df |>
+    group_by(category) |>   # this tells R that we want to apply the commands that come after to each category as a group
+    summarize(
+        n   = n()
+    )
+```
+
+Now, let's add more lines of code to look at the minimum, maximum, and mean top speed in each train category.
+
+```{r}
+routes_df |>
+    group_by(category) |>
+    summarize(
+        n        = n(),
+        min_speed = min(top_speed_kmh, na.rm = TRUE),
+        max_speed = max(top_speed_kmh, na.rm = TRUE),
+        mean_speed = mean(top_speed_kmh, na.rm = TRUE)
+    ) 
+
+```
+
+To make the table easier to read, let's arrange it by speed.
 
 ```{r}
 routes_df |>
@@ -95,16 +121,32 @@ routes_df |>
         mean_speed = mean(top_speed_kmh, na.rm = TRUE)
     ) |>
     arrange(desc(mean_speed))
-
 ```
 
-#### Plot
+#### 2. Plot
+
+We're going to build this plot step by step. First, we'll just build the grid.
 
 ```{r}
-ggplot(routes_df, aes(x = category, y = top_speed_kmh)) +
-    geom_boxplot() +
+speed_plot <- ggplot(routes_df, aes(x = category, y = top_speed_kmh)) 
+speed_plot
+```
+
+Now, let's add a box plot
+
+```{r}
+speed_plot <- speed_plot +
+    geom_boxplot() 
+speed_plot
+```
+
+And now let's add a jitter plot and a title
+
+```{r}
+speed_plot <- speed_plot +
     geom_jitter(width = 0.1, alpha = 0.5) +
     labs(title = "Top speed by train category")
+speed_plot
 ```
 
 What does the tibble tell you? What does the plot tell you?

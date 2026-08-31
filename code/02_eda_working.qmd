@@ -1,0 +1,86 @@
+---
+title: "Session 2: Load and explore train data"
+author: "Emily Myers"
+date: 03/23/2026
+format: html
+editor: visual
+---
+
+Throughout this workshop series, we'll be answering a core question using this train route data:
+
+- What makes a train route famous?
+
+  - Age of route?
+
+  - Route? i.e., origin, destination, countries traveled through
+
+  - Travel experience, e.g., speed, distance, train type
+
+Before we can answer those questions, we need to explore our data!
+
+# Load packages
+
+# Import data
+
+# Explore data
+
+Now that we've loaded our data, we can start exploring it! We'll start by looking at the structure and content of our data, and then dive into a more granular exploration of the variables most relevant to our questions. Our goals are two-fold:
+
+1.  Identify necessary cleaning and wrangling steps
+2.  Figure out if our data is suited to answer our questions
+
+## Examine structure and content of the data
+
+### Print the first few rows
+
+### Get the column names
+
+### Examine variable types
+
+### Accomplish all of this with one command!
+
+### Look for NAs in each column
+
+### Quality check- do high-speed trains go the fastest? Let's look in two ways.
+
+#### 1. Tibble
+
+##### Here we're going to be using the group_by command from tidyverse. Let's look at how it works before we actually create a summary table by category of train. We'll start by just summarizing the number of trains in each category.
+
+##### Now, let's add more lines of code to look at the minimum, maximum, and mean top speed in each train category.
+
+##### To make the table easier to read, let's arrange it by speed.
+
+#### 2. Plot
+
+##### We're going to build this plot step by step. First, we'll just build the grid.
+
+##### Now, let's add a box plot
+
+##### And now let's add raw data points (jitter) and a title
+
+##### What does the tibble tell you? What does the plot tell you?
+
+## Close inspection of most relevant variables
+
+### What is the unique identifier in our data?
+
+### Is there anything weird going on with fame rank?
+
+### What is the distribution of opening year?
+
+### How many unique origin and destinations are there in the data set?
+
+#### Let's take a look at some of the origin cities
+
+### What does the countries variable look like? How many countries are in a typical route?
+
+### What about the duration variable?
+
+### Let's look closer at the duration variable!
+
+### And the distance variable?
+
+## Possible cleaning steps
+
+## Can we answer our questions with the data as is?
