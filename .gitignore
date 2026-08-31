@@ -1,3 +1,6 @@
+# Hide the Rproject file
+R-Research-Fundamentals.Rproj
+
 #Jeremy's addition's to Github .gitignore R template
 renv/
 .Rprofile
