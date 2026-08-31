@@ -1,0 +1,131 @@
+---
+title: "Project Organization, Loading Data & Using Functions"
+author: "Katie Owers Bonner"
+format: html
+editor: visual
+---
+
+# Quarto documents
+
+This is another format for writing R code, called a Quarto document. It allows you to show code chunks, their output, and explanatory text all in one place, which can be great for exploring data and sharing your thought process with others (and future you!).
+
+This is a text block. You can add headers by starting with a hashtag(s) followed by a space. Try it now
+
+## This is a second-level header
+
+You can add code blocks by selecting ctld/cmd + ALT + i.
+
+Once you have a block, you type your code as normal and run it with either keyboard shortcuts or the green arrow in the box.
+
+```{r}
+2+2
+```
+
+The output of the code will display below the box.
+
+# Loading data
+
+## Telling R where to look for the data
+
+### Method 1- Set your working directory. DON'T DO THIS! 
+
+This is a demonstration of an older, problematic method for telling R where to look for files
+
+First, you tell it the exact folder on your computer:
+
+```{r}
+setwd("~/Teaching/Workshops/r_research-fundamentals_ws/data/train_router/")
+```
+
+Then, you give it the exact path to the file:
+
+```{r}
+data <- read.csv("routes.csv")
+```
+
+Can you see problems with this method?
+
+### Method 2 - Use the "here" package. Do this instead!
+
+R has many functions built in, but you can add a lot more through packages. To see a list of packages available, visit <https://cran.r-project.org/web/packages/available_packages_by_name.html>
+
+The "here" package helps with file navigation so that you can use R seamlessly across different computers and collaborators. It tells your computer where to look for files in a relative way so that if you move files or folders around (or a collaborator has a different file tree), it's much more likely to still be able to find the files and use them appropriately.
+
+To use a package, you have to complete two steps
+
+1\. Install the package - you only have to do this once per project. After that it is stored in the project.
+
+```{r}
+install.packages("here") # note quotes around the package name here
+```
+
+2\. Load the package - you have to do this each time you open R
+
+```{r}
+library(here) # and no quotes around the package name here. 
+```
+
+Note that it tells you what it's treating as the home directory for this computer.
+
+Now, you can specify where your data are by constructing the file path.
+
+Let's load our train data using the read.csv() function
+
+```{r}
+train <- read.csv(here("data","train_router","routes.csv"))
+```
+
+## Loading other kinds of Data
+
+### XLS(X) files:
+
+```{r}
+# Install:
+install.packages("tidyverse")
+
+# Load: 
+library(readxl) # note this is installed as part of tidyverse, but you load it on its own.
+
+```
+
+```{r}
+data_xlsx <- read_xlsx(here("data","other_examples","canoe_marathon_data.xlsx"))
+```
+
+Remember, if you want to understand this new read_xlsx() funciton better, you can look at its help page with
+
+```{r}
+?read_xlsx
+```
+
+What if you want to read the data in another sheet of this file?
+
+```{r}
+data_xlsx_regions <- read_xlsx(here("data","raw","canoe_marathon_data.xlsx"), sheet = "races_and_regions")
+```
+
+### SPSS, SAS, and STATA
+
+Install and load the haven package
+
+```{r}
+install.packages("haven")
+library(haven)
+```
+
+Then use the appropriate function:
+
+```{r}
+read_dta()
+read_sas()
+read_spss()
+```
+
+### Web data
+
+Just feed it the link:
+
+```{r}
+web_data <- read.csv("https://www.stats.govt.nz/assets/Uploads/Annual-enterprise-survey/Annual-enterprise-survey-2024-financial-year-provisional/Download-data/annual-enterprise-survey-2024-financial-year-provisional.csv")
+
+```
