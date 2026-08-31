@@ -28,7 +28,7 @@ Download R and RStudio following the [instructions here](https://rstudio-educati
 
 - [Registration Page](https://libcal.dartmouth.edu/event/17272420) with workshop description. *Note: register for both days!*
 - [The Workshop Github repository](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws)
-- Direct Download link: [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals) <img src="../images/f26_research-fundamentals.svg" width="50%"/>
+- Direct Download link: [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals) (QR code below)<img src="../images/f26_research-fundamentals.svg" width="50%"/>
 
 ## Instructors
 
@@ -120,3 +120,7 @@ In the **hands-on Coding lessons** (“b” sessions), you will apply and practi
 - **Session 4a: Computational / Reproducible Research Best Practices (12:45 - 1:45pm)**
 - Break (1:45 - 2:00pm)
 - **Session 4b: Applying Reproducible Research Best Practices to your Own Projects in R (2:00 - 3:30pm)**
+
+## Feedback
+
+Our goal is to provide positive and meaningful educational experiences for all participants in our workshops. Help us improve by letting us know what we did right, what we can improve on, and what other workshops / offerings you would like to see in the future. **Please fill out this survey at the end of our workshop: [dartgo.org/feedback](https://dartgo.org/feedback).**

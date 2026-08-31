@@ -1,0 +1,48 @@
+---
+title: "Merging Post45 Books Data"
+author: "Jeremy Mikecz"
+format: html
+editor: visual
+---
+
+## 
+
+## Setup
+
+```{r}
+library(tidyverse)
+
+# Turn off scientific notation globally
+options(scipen = 999)
+```
+
+## Merging Datasets
+
+1.  NYT Hardcover Fiction
+    1.  merge titles + Hathi
+    2.  merge titles/ht to weekly bestsellers
+2.  Literary Prizes
+    1.  link / merge NYT data to prizes
+3.  create separate author table?
+
+```{r}
+weeks_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-lists.csv"))
+
+titles_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-titles.csv"))
+
+hathi_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-hathitrust_metadata.csv"))
+```
+
+```{r}
+print(colnames(weeks_df))
+print(colnames(titles_df))
+print(colnames(hathi_df))
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
