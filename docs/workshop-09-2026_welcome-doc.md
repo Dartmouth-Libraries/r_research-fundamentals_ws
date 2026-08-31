@@ -1,6 +1,11 @@
 # Welcome Document
 Dartmouth Libraries
 
+# Welcome Document
+
+The Reproducible Research Group (Dartmouth Libraries and Research
+Computing) is pleased to welcome you too our workshop!
+
 # Concepts to Code: Building Good Computational Research Practices with R
 
 Sept 2 & 3, 2026
@@ -17,9 +22,8 @@ here](https://rstudio-education.github.io/hopr/starting.html).
 ## What to bring
 
 1.  Laptop and charger (unless your battery can last all day)
-2.  *Optional*: a research project you are interested in starting (with
-    data)
-3.  Come with an open mind ready to learn
+2.  *Optional*: a dataset you want to work with.
+3.  An open mind ready to learn
 
 ## Key Links / Resources
 
@@ -85,9 +89,10 @@ handwritten text recognition
 You can contact your instructors directly at the email addresses listed
 above.
 
-But do you have a computational research or data-intensive project you
-need help with, but not sure who to ask? Contact our department at
-<Research.Facilitation@dartmouth.edu>.
+If you have a computational research or data-intensive project you need
+help with, but aren’t sure who to ask, you can reach our whole
+department at <Research.Facilitation@dartmouth.edu> and someone will
+assist you.
 
 To learn more about our group visit [our
 webpage](https://www.library.dartmouth.edu/about-us/dartmouth-libraries/departments/research-facilitation).
@@ -143,7 +148,7 @@ practice what you learned in the Concepts sessions: i.e., setting up a
 project in R Studio, and writing R code that explores, cleans, analyzes,
 and visualizes your data.
 
-### Day 1 (Wed. Sept 2)
+### Day 1 (Wednesday Sept 2)
 
 - **9:00 - 9:15 Welcome / Introductions / Get to know the people around
   you**
@@ -155,7 +160,7 @@ and visualizes your data.
 - *Break*
 - **Session 2b: Exploratory Data Analysis in R (2:00 - 3:30pm)**
 
-### Day 2 (Thurs. Sept 3)
+### Day 2 (Thursday Sept 3)
 
 - **9:00 - 9:15 Welcome / Intros**
 - **Session 3a: Introduction to Data Cleaning for Analysis and
