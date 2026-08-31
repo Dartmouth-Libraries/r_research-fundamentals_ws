@@ -96,8 +96,10 @@ webpage](https://www.library.dartmouth.edu/about-us/dartmouth-libraries/departme
 
 ### The LINK (Berry 180A)
 
-The LINK is found on Berry Floor 1 directly across from the circulation
-desk (to the east)
+The LINK is a new teaching and learning space found on Berry Floor 1
+directly across from the circulation desk (to the east). [Click
+here](https://researchguides.dartmouth.edu/TheLINK) for more information
+about this space.
 
 ### Accessible entrance
 
@@ -119,6 +121,13 @@ map](https://www.dartmouth.edu/library/bakerberry/docs/Bathroom_Locations_in_Bak
   - In the stairwell behind the former Baker Café
   - In the Stacks, there are multiple near the elevator on the following
     floors (Basement + Floors 4, 5, and 6)
+
+## Food & Drink
+
+**A light breakfast (pastries / coffee) and boxed lunches from Lou’s
+(sandwiches, chips) will be provided to all registered participants**.
+Additional snacks and hot & cold drinks may be purchased at Novack Café
+(7:30 am - 2:30 pm) just one floor down in Berry.
 
 ## Schedule
 
