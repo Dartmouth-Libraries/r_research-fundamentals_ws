@@ -1,4 +1,5 @@
 #Jeremy's addition's to Github .gitignore R template
+renv/
 .Rprofile
 hidden-*/
 
