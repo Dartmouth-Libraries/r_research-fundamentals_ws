@@ -27,8 +27,16 @@ here](https://rstudio-education.github.io/hopr/starting.html).
   workshop description. *Note: register for both days!*
 - [The Workshop Github
   repository](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws)
-- Direct Download link:
-  [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
+  - **Welcome Document (START HERE)**:
+    [dartgo.org/f26_research-fundamentals](https://dartgo.org/f26_research-fundamentals)
+    (QR code below)
+
+<img src="images/qr-welcome-code.png" data-fig-alt="workshop QR code"
+width="200" />
+
+- **DIRECT DOWNLOAD LINK** - *click here to download workshop
+  materials*:
+  [dartgo.org/f26_research-fundamentals_download](https://dartgo.org/f26_research-fundamentals_download)
   (QR code below)
 
 <img src="images/qr-download-code.png" data-fig-alt="workshop QR code"
