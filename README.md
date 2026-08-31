@@ -1,39 +1,48 @@
 # From Concepts to Code
+
 ## Research Fundamentals in R
 
 ## 1. Overview
 
+Participants in the Sept. 2026 version of this workshop will find all the information they need in our [Welcome Document](docs/workshop-09-2026_welcome-doc.md).
+
 ## 2. Creator(s) / Author(s)
 
-+ Katie Owers Bonner (Research Facilitation, Dartmouth Libraries)
-+ Emily Myers (Research Facilitation, Dartmouth Libraries)
-+ Jeremy Mikecz (Research Facilitation, Dartmouth Libraries)
+- Katie Owers Bonner (Research Facilitation, Dartmouth Libraries)
+- Emily Myers (Research Facilitation, Dartmouth Libraries)
+- Jeremy Mikecz (Research Facilitation, Dartmouth Libraries)
 
 ## 3. Designed for:
 
-+ in-person, multi-day workshop
-  
+- in-person, multi-day workshop
+
 ## 4. Learning Objectives
 
-Upon completing the lessons offered here, the student will be able to:
+Upon completing the lessons offered here, you will be able to:
 
-+ obj 1
+- pose clear, open, feasible, and interesting research questions and design a research project that can answer these questions (1a\*)
 
-+ obj 2
+- apply R to create a research project folder that aligns with computational best practices (1b)
 
-+ obj 3
+- explore a dataset's contents to better align their research questions and methods with their data (2a)
 
-+ obj 4
+- employ R to explore data (2b)
 
-+ obj 5
+- develop a data cleaning plan to prepare your data for analysis (3a)
 
-  *recommendations: identify up to 5 principal learning objectives. These objectives should be feasable, measureable...*
-  
+- clean your data using R (3b)
+
+- identify and implement computational best practices for developing a research project that is open, transparent, and reproducible (4a)
+
+- apply these best practices to your own research questions and data (4b)
+
+\* *1a --\> 4b: lesson number (see [Welcome Document](docs/workshop-09-2026_welcome-doc.md))*
+
 ## 5. Instructor(s) and Years Taught (if taught live)
 
-+ Katie Owers Bonner (Summer 2026)
-+ Emily Myers (Summer 2026)
-+ Jeremy Mikecz (Summer 2026)
+- Katie Owers Bonner (Summer 2026)
+- Emily Myers (Summer 2026)
+- Jeremy Mikecz (Summer 2026)
 
 ## 6. Other Instructional Information
 
@@ -43,32 +52,24 @@ Upon completing the lessons offered here, the student will be able to:
 
 **Pre-requisites:** [required knowledge / skills to begin]
 
-    + 1. pre-req 1
+```         
++ 1. install R and R Studio
 
-    + 2. pre-req 2
-    
++ 2. *no other pre-requisites*
+```
+
 ## 7. Getting Started
 
-Follow the instructions in [setup.qmd](setup.qmd) to:
-
-1. install and set up R and R Studio (if you haven't already)
-
-2. download course materials
-
-3. set up a virtual environment for this class/workshop/project using **renv**
-
-4. verify your setup
-
-5. perform troubleshooting
-
+- Review the [Welcome Document](docs/workshop-09-2026_welcome-doc.md))
 
 ## 8. Overview of Materials
 
-1. 2026 Workshop - [Welcome Document]()
-2. Notebooks / code
-2. Slides
-3. Other instructional materials
-4. Data
+1.  **docs** - workshop documentation, including:
+    a.  2026 Workshop - [Welcome Document](docs/workshop-09-2026_welcome-doc.md))
+2.  **code**: code notebooks & scripts for the workshop's coding lessons
+3.  **slides**: presentation slides for the workshop's concepts lessons
+4.  **data**: workshop data
+5.  **resources** additional resources
 
 ## 9. LICENSE
 
@@ -77,5 +78,3 @@ Instructional materials produced here are available under the [CC BY-NC 4.0](htt
 ## 10. Acknowledgements
 
 **Template Information**: This repository was created using the [R Tutorial Template](https://github.com/Dartmouth-Libraries/R-tutorial-template) (created by Research Facilitation, Dartmouth Libraries).
-
-
