@@ -8,9 +8,7 @@ format:
 
 <!--to render this document as both .pdf and .md enter the following in the terminal: quarto render docs/workshop-09-2026_welcome-doc.qmd-->
 
-# Welcome Document
-
-The Reproducible Research Group (Dartmouth Libraries and Research Computing) is pleased to welcome you too our workshop!
+The Reproducible Research Group (Dartmouth Libraries and Research Computing) is pleased to welcome you to our **Concepts to Code** workshop. You'll explore computational research best practices and examine how approaches differ across academic fields in our Concepts sessions. Then, in hands-on Code sessions, you'll build the programming skills in R to put these best practices into action.
 
 # Concepts to Code: Building Good Computational Research Practices with R
 
