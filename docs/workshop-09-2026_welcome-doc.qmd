@@ -6,6 +6,8 @@ format:
   gfm: default
 ---
 
+<!--to render this document as both .pdf and .md enter the following in the terminal: quarto render docs/workshop-09-2026_welcome-doc.qmd-->
+
 # Welcome Document
 
 The Reproducible Research Group (Dartmouth Libraries and Research Computing) is pleased to welcome you too our workshop!
@@ -25,7 +27,7 @@ Download R and RStudio following the [instructions here](https://rstudio-educati
 ## What to bring
 
 1.  Laptop and charger (unless your battery can last all day)
-2.  *Optional*: a dataset you want to work with.
+2.  *Optional*: a dataset you want to work with, preferably in `.csv` format if possible (if working with Excel, you can save an individual worksheet this way: **File** –\> **Save As** –\> from the file type dropdown menu select **CSV-UTF-8**)
 3.  An open mind ready to learn
 
 ## Key Links / Resources
@@ -39,6 +41,8 @@ Download R and RStudio following the [instructions here](https://rstudio-educati
 - **DIRECT DOWNLOAD LINK** - *click here to download workshop materials*: [dartgo.org/f26_research-fundamentals_download](https://dartgo.org/f26_research-fundamentals_download) (QR code below)
 
 ![](images/qr-download-code.png){fig-alt="workshop QR code" width="200"}
+
+\*If the above link doesn't work for you, you can 1) go directly to our [Github workshop repository](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws), select the green **Code** button and click on **Download ZIP**; or 2) download [a copy of the zipped workshop folder from Google Drive](https://drive.google.com/drive/folders/1mnuquh7BQi_y-d54NPjROEpxhdWR-Qby?usp=sharing).
 
 ## Instructors
 
