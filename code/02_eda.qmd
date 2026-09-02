@@ -144,7 +144,7 @@ speed_plot <- speed_plot +
 speed_plot
 ```
 
-And now let's add a jitter plot and a title
+And now let's add data points (using jitter position) and a title
 
 ```{r}
 speed_plot <- speed_plot +
