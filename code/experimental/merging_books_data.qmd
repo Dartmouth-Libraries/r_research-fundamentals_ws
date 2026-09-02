@@ -11,6 +11,7 @@ editor: visual
 
 ```{r}
 library(tidyverse)
+library(here)
 
 # Turn off scientific notation globally
 options(scipen = 999)
@@ -26,11 +27,11 @@ options(scipen = 999)
 3.  create separate author table?
 
 ```{r}
-weeks_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-lists.csv"))
+weeks_df <- read_csv(here("data/post45_books/original/nyt_hardcover_fiction_bestsellers-lists.csv"))
 
-titles_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-titles.csv"))
+titles_df <- read_csv(here("data/post45_books//original/nyt_hardcover_fiction_bestsellers-titles.csv"))
 
-hathi_df <- read_csv(here("data/post45_books/nyt_hardcover_fiction_bestsellers-hathitrust_metadata.csv"))
+hathi_df <- read_csv(here("data/post45_books//original/nyt_hardcover_fiction_bestsellers-hathitrust_metadata.csv"))
 ```
 
 ```{r}
@@ -40,9 +41,160 @@ print(colnames(hathi_df))
 ```
 
 ```{r}
+print(dim(hathi_df))
+print(dim(titles_df))
+print(dim(weeks_df))
+```
+
+These datasets contain various different unique identifiers. It's useful to examine what each represents:
+
+- **works**: oclc_owi: OCLC Works Identifier: groups together different editions of the same creative work
+
+- **bibliographic record**: each bibliographic record (related to one specific edition / manifestation) gets its own OCLC number
+
+- **editions**: oclc_isbn
+
+- **specific scanned copy**: htid (Hathi Trust id)
+
+```{ids and related metadata}
+OCLC number (bibliographic record — the "edition")
+   ├── oclc_isbn       → ISBN(s) tied to that OCLC number
+   ├── oclc_holdings   → physical holdings count for that OCLC number
+   ├── oclc_eholdings  → electronic holdings count for that OCLC number
+   ├── oclc_owi        → the "work" that OCLC number belongs to (many OCLC numbers can share one OWI)
+   └── (htid links in separately, via ISBN/OCLC crosswalk, to identify a specific scanned copy)
+```
+
+De-duplicate Hathi Trust (since it often has multiple records for each work, thus multiple `oclc_owi` identifiers).
+
+```{r}
+# Treat NA and "" as equivalent "missing" markers
+is_missing <- function(x) {
+    if (is.character(x)) {
+        is.na(x) | x == ""
+    } else {
+        is.na(x)
+    }
+}
+```
+
+```{r}
+hathi_df_deduped <- hathi_df |>
+    mutate(.completeness = rowSums(!across(everything(), is_missing))) |>
+    group_by(oclc_owi) |>
+    slice_max(order_by = .completeness, n = 1, with_ties = FALSE) |>
+    ungroup() |>
+    select(-.completeness)
+```
+
+```{r}
+# Identify columns that exist in both, excluding the join key(s)
+join_keys <- c("oclc_owi")  # e.g. "oclc_isbn" or whatever you're joining on
+
+common_cols <- intersect(names(titles_df), names(hathi_df_deduped))
+common_cols <- setdiff(common_cols, join_keys)
+common_cols
+```
+
+```{r}
 
 ```
 
 ```{r}
 
+
+```
+
+A function that implements this logic:
+
+1.  treating `NA` and `""` both as "missing"
+2.  coalescing when only one side has a real value
+3.  flagging genuine conflicts.
+
+```{r}
+
+
+
+resolve_col <- function(df, col) {
+    col_a <- paste0(col, ".ti")
+    col_b <- paste0(col, ".ht")
+    
+    a <- df[[col_a]]
+    b <- df[[col_b]]
+    
+    miss_a <- is_missing(a)
+    miss_b <- is_missing(b)
+    
+    both_missing   <- miss_a & miss_b
+    only_a_missing <- miss_a & !miss_b
+    only_b_missing <- !miss_a & miss_b
+    both_present   <- !miss_a & !miss_b
+    
+    # Among rows where both are present, do the values actually match?
+    conflict <- both_present & (a != b)
+    conflict[is.na(conflict)] <- FALSE  # safety net, shouldn't trigger given both_present
+    
+    n_conflict <- sum(conflict)
+    
+    # Resolved value: prefer whichever side is non-missing; if both present & equal, either works
+    resolved <- case_when(
+        both_missing   ~ NA_character_,
+        only_a_missing ~ as.character(b),
+        only_b_missing ~ as.character(a),
+        TRUE           ~ as.character(a)  # both present (equal or conflicting) — default to a, flagged below if conflicting
+    )
+    
+    # Preserve original type (case_when with as.character coerces — cast back)
+    if (is.numeric(a)) resolved <- as.numeric(resolved)
+    if (is.logical(a))  resolved <- as.logical(resolved)
+    
+    df[[col]] <- resolved
+    df[[col_a]] <- NULL
+    df[[col_b]] <- NULL
+    
+    if (n_conflict > 0) {
+        flag_col <- paste0(col, "_conflict")
+        df[[flag_col]] <- conflict
+        message(glue::glue("'{col}': {n_conflict} row(s) had differing real values — see '{flag_col}', resolved to df_a's value pending review"))
+    }
+    
+    df
+}
+```
+
+Apply this function when joining:
+
+```{r}
+join_keys <- c("oclc_owi")
+common_cols <- setdiff(intersect(names(titles_df), names(hathi_df_deduped)), join_keys)
+
+df_joined <- titles_df |>
+    inner_join(hathi_df_deduped, by = join_keys, suffix = c(".ti", ".ht")) 
+
+df_joined <- reduce(common_cols, resolve_col, .init = df_joined)
+```
+
+```{r}
+# For each overlapping column, compare .a vs .b versions
+for (col in common_cols) {
+    col_a <- paste0(col, ".ti")
+    col_b <- paste0(col, ".ht")
+    
+    if (all(df_joined[[col_a]] == df_joined[[col_b]], na.rm = TRUE) &&
+        all(is.na(df_joined[[col_a]]) == is.na(df_joined[[col_b]]))) {
+        # Identical (treating matching NAs as identical) -> keep df_a's version, drop df_b's
+        df_joined[[col]] <- df_joined[[col_a]]
+        df_joined[[col_a]] <- NULL
+        df_joined[[col_b]] <- NULL
+    } else {
+        # Different -> flag it, keep both for inspection
+        message(glue::glue("Column '{col}' differs between df_a and df_b — kept both as {col}.a / {col}.b"))
+    }
+}
+```
+
+### Export
+
+```{r}
+write_csv(df_joined, "../../data/post45_books/processed/titles-ht.csv")
 ```

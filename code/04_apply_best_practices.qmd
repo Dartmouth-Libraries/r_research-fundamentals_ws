@@ -68,10 +68,30 @@ library(tidyverse)
 This is for the Post-45 Book Data. For your own project, adjust the path and file name.
 
 ```{r}
+books_df <- read_csv("../data/post45_books/processed/titles-ht.csv")
+```
 
+```{r}
+spec(books_df)
 ```
 
 ## 3. Data Summaries / Exploration
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
 
 ## 4. Simple Exploratory Visualization
 

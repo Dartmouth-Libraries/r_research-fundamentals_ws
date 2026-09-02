@@ -1,10 +1,14 @@
 # Welcome Document
 Dartmouth Libraries
 
-# Welcome Document
+<!--to render this document as both .pdf and .md enter the following in the terminal: quarto render docs/workshop-09-2026_welcome-doc.qmd-->
 
-The Reproducible Research Group (Dartmouth Libraries and Research
-Computing) is pleased to welcome you too our workshop!
+The **Reproducible Research Group** (Dartmouth Libraries and Research
+Computing) is pleased to welcome you to our **Concepts to Code**
+workshop. You’ll explore computational research best practices and
+examine how approaches differ across academic fields in our *Concepts*
+sessions. Then, in hands-on *Code* sessions, you’ll build the
+programming skills in R to put these best practices into action.
 
 # Concepts to Code: Building Good Computational Research Practices with R
 
@@ -22,7 +26,10 @@ here](https://rstudio-education.github.io/hopr/starting.html).
 ## What to bring
 
 1.  Laptop and charger (unless your battery can last all day)
-2.  *Optional*: a dataset you want to work with.
+2.  *Optional*: a dataset you want to work with, preferably in `.csv`
+    format if possible (if working with Excel, you can save an
+    individual worksheet this way: **File** –\> **Save As** –\> from the
+    file type dropdown menu select **CSV-UTF-8**)
 3.  An open mind ready to learn
 
 ## Key Links / Resources
@@ -45,6 +52,13 @@ width="200" />
 
 <img src="images/qr-download-code.png" data-fig-alt="workshop QR code"
 width="200" />
+
+\*If the above link doesn’t work for you, you can 1) go directly to our
+[Github workshop
+repository](https://github.com/Dartmouth-Libraries/r_research-fundamentals_ws),
+select the green **Code** button and click on **Download ZIP**; or 2)
+download [a copy of the zipped workshop folder from Google
+Drive](https://drive.google.com/drive/folders/1mnuquh7BQi_y-d54NPjROEpxhdWR-Qby?usp=sharing).
 
 ## Instructors
 

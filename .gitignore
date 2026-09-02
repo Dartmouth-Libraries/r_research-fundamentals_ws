@@ -3,6 +3,7 @@
 
 #Jeremy's addition's to Github .gitignore R template
 renv/
+renv.lock
 .Rprofile
 hidden-*/
 

@@ -75,7 +75,8 @@ animal * 2
 high_temp <- 100
 high_temp <- 105
 
-# Objects can have multiple dimensions as well. The code below creates a data.frame, which is R's basic tabular data format.
+# Objects can have multiple dimensions as well. The code below creates a data.frame, 
+    # which is R's basic tabular data format.
 fruit <- data.frame(
     Type = c("apple", "banana", "cherry"),
     Quantity = c(4, 3, 10)
@@ -111,7 +112,7 @@ fruit[2,1:2] # Select the first and second elements in row 2
 
 # Here are some other examples:
 
-sqrt(4)
+sqrt(4) 
 
 mean(odd_nums)
 sd(odd_nums) # standard deviation function

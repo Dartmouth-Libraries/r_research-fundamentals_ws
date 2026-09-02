@@ -7,13 +7,15 @@ editor: visual
 
 # Quarto documents
 
-This is another format for writing R code, called a Quarto document. It allows you to show code chunks, their output, and explanatory text all in one place, which can be great for exploring data and sharing your thought process with others (and future you!).
+This is another format for writing R code, called a Quarto document. It allows you to show code, its output, and explanatory text all in one place, which can be great for exploring data and sharing your thought process with others (and future you!).
 
-This is a text block. You can add headers by starting with a hashtag(s) followed by a space. Try it now
+This is a text block. You can add headers by starting with a hashtag(s) followed by a space. Try it now:
 
 ## This is a second-level header
 
-You can add code blocks by selecting ctld/cmd + ALT + i.
+## Code blocks
+
+You can add code blocks by selecting ctrl/cmd + ALT + i.
 
 Once you have a block, you type your code as normal and run it with either keyboard shortcuts or the green arrow in the box.
 
@@ -23,21 +25,29 @@ Once you have a block, you type your code as normal and run it with either keybo
 
 The output of the code will display below the box.
 
-# Loading data
+The same happens with figures and tables
+
+```{r}
+hist(iris$Sepal.Length)
+```
+
+# Load data
 
 ## Telling R where to look for the data
 
-### Method 1- Set your working directory. DON'T DO THIS! 
+### Method 1- Set your working directory. DON'T DO THIS!
 
 This is a demonstration of an older, problematic method for telling R where to look for files
 
-First, you tell it the exact folder on your computer:
+First, you tell it the exact folder on your computer by navigating to the correct folder in the Files pane (bottom right), then selecting the blue gear icon and "Set as Working Directory".
 
 ```{r}
 setwd("~/Teaching/Workshops/r_research-fundamentals_ws/data/train_router/")
 ```
 
-Then, you give it the exact path to the file:
+Then, you give it the name of the file to read, as in the below.
+
+*Note that this method doesn't work in a Quarto document, but would in an R script.*
 
 ```{r}
 data <- read.csv("routes.csv")
@@ -65,11 +75,16 @@ install.packages("here") # note quotes around the package name here
 library(here) # and no quotes around the package name here. 
 ```
 
-Note that it tells you what it's treating as the home directory for this computer.
+Note that it tells you what it's treating as the home directory for this project.
 
 Now, you can specify where your data are by constructing the file path.
 
-Let's load our train data using the read.csv() function
+```{r}
+?here
+file_path = here("data","train_router","routes.csv")
+```
+
+Let's load our train data using the read.csv() function, using the here() function to specify where the data are located:
 
 ```{r}
 train <- read.csv(here("data","train_router","routes.csv"))
@@ -92,7 +107,7 @@ library(readxl) # note this is installed as part of tidyverse, but you load it o
 data_xlsx <- read_xlsx(here("data","other_examples","canoe_marathon_data.xlsx"))
 ```
 
-Remember, if you want to understand this new read_xlsx() funciton better, you can look at its help page with
+Remember, if you want to understand this new read_xlsx() function better, you can look at its help page with
 
 ```{r}
 ?read_xlsx
