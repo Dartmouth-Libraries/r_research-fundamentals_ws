@@ -793,6 +793,17 @@ const trim = v => Number(v.toFixed(v < 10 ? 1 : 0)).toLocaleString('en-US');
 
 const pct = v => (v > 0 ? '+' : '−') + Math.abs(v).toFixed(2) + '%';
 
+/** A calendar year. No thousands separator on ordinary years ("2013", not
+ *  "2,013"), a separator once it helps ("802,701"), and words past a million. */
+function fmtYear(y) {
+  y = Math.round(y);
+  if (y < 10000) return String(y);
+  if (y < 1e6)   return fmt(y);
+  if (y < 1e9)   return trim(y / 1e6) + ' million';
+  if (y < 1e12)  return trim(y / 1e9) + ' billion';
+  return trim(y / 1e12) + ' trillion';
+}
+
 /* ---------- theme ---------- */
 
 function isDark() {
@@ -872,7 +883,7 @@ function workTip(w) {
     <div class="t-title">${w.ti}</div>
     <div class="t-cr">${w.cr}${w.gn ? ' &middot; ' + w.gn : ''}</div>
     <div class="t-row"><span>Released</span><span>${w.rl}</span></div>
-    <div class="t-row"><span>Set in</span><span>${fmt(w.ys)}${overtaken ? ' (past)' : ''}</span></div>
+    <div class="t-row"><span>Set in</span><span>${fmtYear(w.ys)}${overtaken ? ' (already past)' : ''}</span></div>
     <div class="t-row"><span>Looks ahead</span><span>${fmtYears(w.hz)}</span></div>
     ${w.pr ? `<div class="t-pred">${w.pr}</div>` : ''}`;
 }
@@ -1304,7 +1315,7 @@ function drawC3() {
    One dot per work, stacked above the year it is set in.
    ========================================================================== */
 
-const C4 = { W: 940, L: 46, R: 26, T: 56, B: 52, DOT: 3.4, GAP: 16,
+const C4 = { W: 940, L: 46, R: 26, T: 74, B: 52, DOT: 3.4, GAP: 16,
              SPLIT: 0.66, TAIL_BINS: 10 };
 let c4Active;
 
@@ -1431,11 +1442,22 @@ function drawC4(active) {
                fill: cssVar('--muted') }, svg).textContent =
     'YEAR THE WORK IS SET IN →';
 
-  el('text', { x: xSplit + C4.GAP + tailW / 2, y: C4.T - 24, 'text-anchor': 'middle',
+  // --- header labels, pinned to the very top so columns never reach them ---
+  el('text', { x: C4.L, y: 14,
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 10.5,
+               'font-weight': 700, 'letter-spacing': '0.07em',
+               fill: cssVar('--muted') }, svg).textContent = 'ALREADY OVERTAKEN';
+  el('text', { x: C4.L, y: 28,
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 10.5,
+               fill: cssVar('--muted') }, svg).textContent =
+    fmt(shown.filter(w => w.ys <= META.current_year).length) +
+    ' works depict a year that has already happened';
+
+  el('text', { x: xSplit + C4.GAP + tailW / 2, y: 14, 'text-anchor': 'middle',
                'font-family': 'Libre Franklin, sans-serif', 'font-size': 10.5,
                'font-weight': 700, 'letter-spacing': '0.07em',
                fill: cssVar('--muted') }, svg).textContent = 'THE DEEP FUTURE';
-  el('text', { x: xSplit + C4.GAP + tailW / 2, y: C4.T - 10, 'text-anchor': 'middle',
+  el('text', { x: xSplit + C4.GAP + tailW / 2, y: 28, 'text-anchor': 'middle',
                'font-family': 'Libre Franklin, sans-serif', 'font-size': 10.5,
                fill: cssVar('--muted') }, svg).textContent =
     fmt(beyond) + ' works beyond ' + brk + ', in equal-sized groups';
@@ -1455,23 +1477,32 @@ function drawC4(active) {
   });
 
   // --- the "now" line -----------------------------------------------------
-  el('line', { x1: nowX, x2: nowX, y1: C4.T - 14, y2: baseY + 5,
+  // Its label is set vertically along the line. The tallest column in the whole
+  // chart is the year 2020, six years to the left of this line, so a horizontal
+  // label here would sit on top of that column's annotation.
+  el('line', { x1: nowX, x2: nowX, y1: C4.T - 26, y2: baseY + 5,
                stroke: cssVar('--flag'), 'stroke-width': 1.4 }, svg);
-  el('text', { x: nowX - 7, y: C4.T - 20, 'text-anchor': 'end',
-               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11.5,
-               'font-weight': 700, fill: cssVar('--flag') }, svg).textContent =
-    'NOW (' + META.current_year + ')';
-  el('text', { x: nowX - 7, y: C4.T - 5, 'text-anchor': 'end',
-               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
-               fill: cssVar('--muted') }, svg).textContent =
-    '← these futures have expired';
+  el('text', {
+    transform: `translate(${nowX - 5},${C4.T + 12}) rotate(-90)`,
+    'text-anchor': 'end',
+    'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+    'font-weight': 700, 'letter-spacing': '0.06em',
+    fill: cssVar('--flag')
+  }, svg).textContent = 'NOW · ' + META.current_year;
 
   // --- annotate the tallest columns, which are the round years ------------
+  // Take the tallest columns first, and skip any that would print on top of a
+  // label already placed. At ~2.9px per year, 1999 and 2000 are 3px apart, so
+  // without this the spikes annotate each other into illegibility.
+  const placed = [];
   [...cols.values()]
-    .filter(c => c.label && c.works.length >= tallest * 0.42)
+    .filter(c => c.label && c.works.length >= tallest * 0.34)
     .sort((a, b) => b.works.length - a.works.length)
-    .slice(0, 5)
     .forEach(col => {
+      if (placed.length >= 5) return;
+      if (placed.some(px => Math.abs(px - col.x) < 30)) return;
+      placed.push(col.x);
+
       const topY = baseY - 2 - (col.works.length - 1) * C4.DOT;
       el('text', { x: col.x, y: topY - 8, 'text-anchor': 'middle',
                    'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
@@ -1480,7 +1511,7 @@ function drawC4(active) {
       el('text', { x: col.x, y: topY - 20, 'text-anchor': 'middle',
                    'font-family': 'Libre Franklin, sans-serif', 'font-size': 10,
                    fill: cssVar('--muted') }, svg)
-        .textContent = col.works.length;
+        .textContent = col.works.length + ' works';
     });
 
   // --- hover ---------------------------------------------------------------
@@ -1499,7 +1530,7 @@ function drawC4(active) {
     `works set beyond ${brk} are divided into ${tailBins.length} groups of equal size, ` +
     `each labelled with the year it starts from; a logarithmic axis would have crushed ` +
     `most of them into two columns. ` +
-    (deepest ? `The deepest is <em>${deepest.ti}</em>, set in the year ${fmtYearShort(deepest.ys)}. ` : '') +
+    (deepest ? `The deepest is <em>${deepest.ti}</em>, set in the year ${fmtYear(deepest.ys)}. ` : '') +
     `Dots are stacked in medium order within each column, so the colour bands show ` +
     `which media favour which years.`;
 }
