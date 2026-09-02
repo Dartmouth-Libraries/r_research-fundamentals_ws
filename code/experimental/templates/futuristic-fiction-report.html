@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Closing Horizon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+
+<style>
+/* ============================================================================
+   THE CLOSING HORIZON
+   Standalone interactive report. All data is injected by
+   code/05b_futuristic-fiction_report.R, which fills the double-brace
+   placeholders in the script block at the bottom of this file.
+   ========================================================================== */
+
+:root {
+  --ground:    #ffffff;
+  --panel:     #f5f5f2;
+  --panel-2:   #ecece8;
+  --ink:       #101215;
+  --ink-soft:  #454b52;
+  --muted:     #7b838b;
+  --rule:      #d8dadb;
+  --rule-soft: #e9eae9;
+  --flag:      #b3261e;
+
+  --f-sans:  "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+  --f-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+
+  --measure: 34rem;
+  --wide:    62rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:    #131619;
+    --panel:     #1b1f24;
+    --panel-2:   #232830;
+    --ink:       #e8eaec;
+    --ink-soft:  #b2b9c0;
+    --muted:     #848c95;
+    --rule:      #2f353c;
+    --rule-soft: #23282e;
+    --flag:      #f0736a;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:    #131619;
+  --panel:     #1b1f24;
+  --panel-2:   #232830;
+  --ink:       #e8eaec;
+  --ink-soft:  #b2b9c0;
+  --muted:     #848c95;
+  --rule:      #2f353c;
+  --rule-soft: #23282e;
+  --flag:      #f0736a;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--f-serif);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- layout ---------- */
+
+.shell { max-width: var(--wide); margin: 0 auto; padding: 0 24px 90px; }
+.col   { max-width: var(--measure); }
+
+p { margin: 0 0 1.1em; }
+p:last-child { margin-bottom: 0; }
+
+/* ---------- theme toggle ---------- */
+
+.topbar {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 14px 24px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+#themeBtn {
+  font-family: var(--f-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 5px 11px;
+  cursor: pointer;
+}
+#themeBtn:hover { color: var(--ink); border-color: var(--muted); }
+#themeBtn:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
+
+/* ---------- masthead ---------- */
+
+.mast { padding: 26px 0 30px; border-bottom: 1px solid var(--ink); }
+
+.kicker {
+  font-family: var(--f-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--flag);
+  margin-bottom: 16px;
+}
+.mast h1 {
+  font-family: var(--f-sans);
+  font-weight: 800;
+  font-size: clamp(2.3rem, 6.4vw, 4.15rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  margin: 0 0 18px;
+  max-width: 30ch;
+  text-wrap: balance;
+}
+.deck {
+  font-family: var(--f-serif);
+  font-size: clamp(1.06rem, 2.1vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 46ch;
+  margin: 0 0 22px;
+}
+.byline {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* ---------- key numbers strip ---------- */
+
+.keynums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 44px;
+}
+.keynum {
+  padding: 20px 20px 20px 0;
+  border-right: 1px solid var(--rule-soft);
+}
+.keynum:last-child { border-right: none; }
+.keynum .big {
+  font-family: var(--f-sans);
+  font-weight: 700;
+  font-size: 2.1rem;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  display: block;
+  margin-bottom: 7px;
+}
+.keynum .cap {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ---------- section furniture ---------- */
+
+section { margin-bottom: 58px; }
+
+h2 {
+  font-family: var(--f-sans);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 1.95rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  max-width: 32ch;
+  text-wrap: balance;
+}
+h3 {
+  font-family: var(--f-sans);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.005em;
+  margin: 0 0 8px;
+}
+.eyebrow {
+  font-family: var(--f-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+strong { font-weight: 600; }
+em.term { font-style: normal; font-weight: 600; }
+
+.figure { margin: 34px 0 0; }
+.fig-head { max-width: var(--measure); margin-bottom: 6px; }
+.fig-title {
+  font-family: var(--f-sans);
+  font-weight: 700;
+  font-size: 1.14rem;
+  letter-spacing: -0.012em;
+  margin: 0 0 5px;
+}
+.fig-sub {
+  font-family: var(--f-sans);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.fig-note {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 12px 0 0;
+  max-width: 60ch;
+}
+.plot { margin-top: 16px; overflow-x: auto; }
+.plot svg { display: block; width: 100%; height: auto; }
+
+/* ---------- interactive controls ---------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule-soft);
+}
+.controls-label {
+  font-family: var(--f-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.chip {
+  font-family: var(--f-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px 5px 9px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: opacity .12s, border-color .12s;
+}
+.chip .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.chip[aria-pressed="false"] { opacity: .38; }
+.chip:hover { border-color: var(--muted); }
+.chip:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
+
+.toggle {
+  font-family: var(--f-sans);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+.toggle input { accent-color: var(--flag); }
+
+/* ---------- small multiples ---------- */
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+  gap: 26px 20px;
+  margin-top: 22px;
+}
+.panel { border-top: 2px solid var(--rule); padding-top: 11px; }
+.panel-name {
+  font-family: var(--f-sans);
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.panel-n {
+  font-family: var(--f-sans);
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 9px;
+}
+.panel svg { display: block; width: 100%; height: auto; }
+.panel-stat {
+  font-family: var(--f-sans);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.28rem;
+  letter-spacing: -0.02em;
+  margin-top: 10px;
+  line-height: 1.1;
+}
+.panel-ci {
+  font-family: var(--f-sans);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.verdict {
+  font-family: var(--f-sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+.verdict.contracting { background: var(--flag); color: #fff; }
+.verdict.flat { background: var(--panel-2); color: var(--muted); }
+
+/* ---------- tooltip ---------- */
+
+#tip {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  max-width: 320px;
+  background: var(--ground);
+  border: 1px solid var(--ink);
+  box-shadow: 0 6px 22px rgba(0,0,0,.18);
+  padding: 12px 14px;
+  font-family: var(--f-sans);
+  font-size: 12.5px;
+  line-height: 1.45;
+  opacity: 0;
+  transition: opacity .1s;
+}
+#tip.on { opacity: 1; }
+#tip .t-title {
+  font-family: var(--f-serif);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.25;
+  margin-bottom: 3px;
+  color: var(--ink);
+}
+#tip .t-cr { color: var(--muted); margin-bottom: 8px; }
+#tip .t-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-variant-numeric: tabular-nums;
+  border-top: 1px solid var(--rule-soft);
+  padding: 3px 0;
+}
+#tip .t-row span:first-child { color: var(--muted); }
+#tip .t-medium {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+#tip .t-medium .dot { width: 8px; height: 8px; border-radius: 50%; }
+#tip .t-pred {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--f-serif);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* ---------- pull quote / callout ---------- */
+
+.pull {
+  border-left: 3px solid var(--flag);
+  padding: 4px 0 4px 20px;
+  margin: 30px 0;
+  max-width: 42ch;
+  font-family: var(--f-serif);
+  font-size: 1.24rem;
+  line-height: 1.42;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.caveat {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  padding: 20px 22px;
+  margin-top: 26px;
+}
+.caveat h3 { color: var(--flag); }
+.caveat p { font-size: 15.5px; }
+
+/* ---------- method list ---------- */
+
+dl.method { margin: 20px 0 0; }
+dl.method > div {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 4px 26px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule-soft);
+}
+dl.method dt {
+  font-family: var(--f-sans);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.45;
+}
+dl.method dd {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+footer {
+  border-top: 1px solid var(--ink);
+  padding-top: 20px;
+  font-family: var(--f-sans);
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 66ch;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 720px) {
+  body { font-size: 16px; }
+  .keynum { padding-right: 14px; }
+  .keynum .big { font-size: 1.7rem; }
+  dl.method > div { grid-template-columns: 1fr; gap: 6px; }
+  .plot { margin-left: -24px; margin-right: -24px; padding: 0 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button id="themeBtn" type="button" aria-label="Switch between light and dark">Dark</button>
+</div>
+
+<div class="shell">
+
+  <!-- ==================== MASTHEAD ==================== -->
+  <header class="mast">
+    <div class="kicker">Post45 Data Collective &middot; Futuristic Fiction</div>
+    <h1>The future got closer. Novelists had nothing to do with it.</h1>
+    <p class="deck">Across <span class="num" id="d-n"></span> works of futuristic fiction, the
+    typical imagined future has moved from <span class="num" id="d-m60"></span> years ahead
+    in the 1960s to <span class="num" id="d-m20"></span> years ahead in the 2020s. But the
+    contraction belongs almost entirely to film and video games. Literary science
+    fiction has not budged in seventy years.</p>
+    <p class="byline">Analysis of the Post45 futuristic fiction dataset &middot;
+      <span id="d-date"></span></p>
+  </header>
+
+  <div class="keynums">
+    <div class="keynum">
+      <span class="big" id="k-film"></span>
+      <span class="cap">annual change in film's imagined horizon, 1950&ndash;2024</span>
+    </div>
+    <div class="keynum">
+      <span class="big" id="k-prose"></span>
+      <span class="cap">annual change for prose fiction &mdash; statistically indistinguishable from zero</span>
+    </div>
+    <div class="keynum">
+      <span class="big" id="k-mix"></span>
+      <span class="cap">of the pooled decline is explained by the changing mix of media</span>
+    </div>
+    <div class="keynum">
+      <span class="big" id="k-exp"></span>
+      <span class="cap">of these imagined futures are set in a year that has already passed</span>
+    </div>
+  </div>
+
+  <!-- ==================== THE FINDING ==================== -->
+  <section>
+    <div class="col">
+      <div class="eyebrow">The finding</div>
+      <h2>Every work of futuristic fiction hides a number</h2>
+      <p>It is the distance between the year a work was made and the year it
+      depicts. <em class="term">2001: A Space Odyssey</em> (1968) looks 33 years
+      ahead. <em class="term">Blade Runner</em> (1982) looks 37 years ahead.
+      H.&nbsp;G.&nbsp;Wells's <em class="term">The Time Machine</em> (1895) looks
+      802,701 years ahead. Call it the <em class="term">horizon</em>.</p>
+
+      <p>Pooled across all media, the horizon has been shrinking by
+      <span class="num" id="d-pooled"></span> a year &mdash; a finding that looks
+      clean until you ask what else changed over the same period. The answer is:
+      almost everything. In the 1950s, <span class="num" id="d-prose50"></span> of
+      futuristic works were prose fiction. By the 2020s that was
+      <span class="num" id="d-prose20"></span>, while film had risen from
+      <span class="num" id="d-film50"></span> to <span class="num" id="d-film20"></span>
+      and video games had appeared from nothing.</p>
+
+      <p>Because film and games look nearer ahead than novels do, a shrinking
+      pooled average could mean either that imaginations contracted or merely
+      that the census changed. Separating the two requires looking inside each
+      medium &mdash; which is what the graphic below lets you do yourself.</p>
+    </div>
+
+    <!-- ---------- CHART 1: THE REACH ---------- -->
+    <div class="figure">
+      <div class="fig-head">
+        <p class="fig-title">The Reach</p>
+        <p class="fig-sub">Every work in the corpus, one mark each. Horizontal
+        position is the year it was released; vertical position is how far into
+        its own future it looks, on a logarithmic scale. Hover any mark to read
+        the work. Click a medium to remove it and watch what happens to the
+        remaining trend lines.</p>
+      </div>
+      <div class="plot"><svg id="c1" role="img"
+        aria-label="Scatter plot of every work by release year and imagined horizon, with median trend lines per medium."></svg></div>
+      <div class="controls" id="c1-controls">
+        <span class="controls-label">Media</span>
+      </div>
+      <p class="fig-note">Marks are jittered horizontally within their release
+      year so overlapping works stay visible. Trend lines join the median
+      horizon of each decade, and are drawn only where a decade holds at least
+      <span class="num" id="d-cell"></span> works of that medium.</p>
+    </div>
+
+    <div class="pull">The three highest marks on that chart are not errors. They
+    are Doctor&nbsp;Who, Olaf Stapledon, and Arthur C. Clarke, correctly
+    recorded.</div>
+  </section>
+
+  <!-- ==================== CHART 2: FIVE VERDICTS ==================== -->
+  <section>
+    <div class="col">
+      <div class="eyebrow">Five media, five answers</div>
+      <h2>Fit a trend to each medium separately and the story falls apart</h2>
+      <p>Each panel below fits its own straight line through the logarithm of
+      the horizon against release year, then converts the slope into a
+      percentage change per year. A medium counts as contracting only if its
+      95% confidence interval stays entirely below zero &mdash; a stricter and
+      more honest bar than a bare p-value.</p>
+    </div>
+
+    <div class="figure">
+      <div class="fig-head">
+        <p class="fig-title">Who is actually pulling the future closer</p>
+        <p class="fig-sub">Median horizon by release decade, log scale, shared
+        across all five panels so the heights are comparable. Point size shows
+        how many works sit behind each median.</p>
+      </div>
+      <div class="panels" id="c2"></div>
+      <p class="fig-note">Film and video games contract robustly. Prose fiction,
+      television and comics show no trend that survives their own uncertainty
+      &mdash; and comics rests on only 72 works across the whole period.</p>
+    </div>
+
+    <div class="caveat">
+      <h3>What this does not say</h3>
+      <p>Release year explains under <span class="num" id="d-r2"></span> of the
+      variation in horizon even with medium included. The trend is real, and it
+      is small. Overwhelmingly, how far ahead a work looks is a choice made by
+      one author for one story &mdash; not a property of the decade they worked in.
+      A chart of medians can make a weak tendency look like a law, and this one
+      would too if we let it.</p>
+    </div>
+  </section>
+
+  <!-- ==================== CHART 3: COMPOSITION ==================== -->
+  <section>
+    <div class="col">
+      <div class="eyebrow">The confound</div>
+      <h2>What changed was who was doing the dreaming</h2>
+      <p>If no single medium is contracting much, why does the pooled figure
+      move at all? Because the population of futuristic fiction was replaced.
+      The genre began this period as a literary form and ended it as a screen
+      form, and the screen has always looked nearer ahead.</p>
+      <p>Controlling for medium cuts the pooled trend from
+      <span class="num" id="d-pooled2"></span> to <span class="num" id="d-ctrl"></span>
+      per year. Roughly <span class="num" id="d-mix2"></span> of the decline
+      everyone would have reported was this substitution, not a change in
+      anybody's imagination.</p>
+    </div>
+
+    <div class="figure">
+      <div class="fig-head">
+        <p class="fig-title">The changing census of the future</p>
+        <p class="fig-sub">Share of futuristic works by medium in each release
+        decade. Hover a decade for the exact figures.</p>
+      </div>
+      <div class="plot"><svg id="c3" role="img"
+        aria-label="Stacked area chart of the share of futuristic works by medium in each decade from 1950 to 2020."></svg></div>
+      <p class="fig-note">The 2020s column covers 2020&ndash;2024 only, so it rests
+      on fewer works than the decades before it.</p>
+    </div>
+  </section>
+
+  <!-- ==================== CHART 4: THE CALENDAR ==================== -->
+  <section>
+    <div class="col">
+      <div class="eyebrow">Expired futures</div>
+      <h2>Nearly half of these futures have already been overtaken</h2>
+      <p>The chart below abandons summary entirely. Each dot is one work, stacked
+      in a column above the year it imagines. It is the corpus arranged as a
+      calendar of the future &mdash; and the striking thing is how much of that
+      calendar is now the past.</p>
+      <p><span class="num" id="d-exp"></span> works in this analysis are set in a
+      year that has already happened. The typical one was looking only
+      <span class="num" id="d-lead"></span> years ahead when it was made. Look
+      also at the shape of the columns: <span class="num" id="d-ends0"></span> of
+      works are set in a year ending in zero, and
+      <span class="num" id="d-ends00"></span> in a year ending in two zeros
+      &mdash; against the 10% and 1% you would expect by chance. Storytellers pick
+      futures the way shopkeepers pick prices.</p>
+    </div>
+
+    <div class="figure">
+      <div class="fig-head">
+        <p class="fig-title">The Calendar of Imagined Futures</p>
+        <p class="fig-sub">One dot per work, stacked above the year it is set in.
+        Dots left of the <em class="term">now</em> line depict a future that has
+        already passed. The axis compresses after 2150 so that every work fits,
+        including the ones set millions of years out. Hover any dot to read the
+        work.</p>
+      </div>
+      <div class="plot"><svg id="c4" role="img"
+        aria-label="Unit chart with one dot per work, stacked above the year each work is set in, from 1950 to 2150, with a line marking the present."></svg></div>
+      <div class="controls" id="c4-controls">
+        <span class="controls-label">Media</span>
+      </div>
+      <p class="fig-note" id="c4-note"></p>
+    </div>
+  </section>
+
+  <!-- ==================== METHOD ==================== -->
+  <section>
+    <div class="col">
+      <div class="eyebrow">How this was made</div>
+      <h2>The choices behind the charts</h2>
+      <p>Every figure on this page was computed in R and injected into this file
+      by a script; none was typed by hand. The decisions that shaped them are
+      listed below, including the ones that could reasonably have gone the other
+      way.</p>
+    </div>
+
+    <dl class="method">
+      <div>
+        <dt>What counts as the horizon</dt>
+        <dd>The imagined year minus the release year. The source file ships its
+        own version of this column; we recomputed it independently and the two
+        agree on all <span class="num" id="m-compared"></span> works with a
+        recorded year.</dd>
+      </div>
+      <div>
+        <dt>Rows removed</dt>
+        <dd><span class="num" id="m-noyear"></span> works have no imagined year
+        and cannot have a horizon. <span class="num" id="m-old"></span> were
+        released before <span class="num" id="m-first"></span>, where a decade
+        holds too few works for a stable median.
+        <span class="num" id="m-rare"></span> belong to media with fewer than 50
+        works in total &mdash; a theme-park ride, an illustration, some radio and
+        tabletop games. That leaves <span class="num" id="m-n"></span> works
+        across <span id="m-media"></span>.</dd>
+      </div>
+      <div>
+        <dt>Rows deliberately kept</dt>
+        <dd>Nineteen works have horizons above a million years, topping out at
+        100 trillion. It would be easy to call these typos and delete them. They
+        are not typos: Doctor Who's &ldquo;Utopia&rdquo; really is set at the end
+        of the universe, and Stapledon's <em class="term">Last and First
+        Men</em> really does run ten million years out. Deleting them would have
+        meant deleting the corpus's most ambitious imaginations &mdash; precisely
+        the works that speak loudest to the question being asked.</dd>
+      </div>
+      <div>
+        <dt>Medians, not averages</dt>
+        <dd>With a variable whose maximum is 100 trillion, an average is
+        meaningless: a single Doctor Who episode would drag any decade's mean
+        into the billions. Medians and log scales absorb the tail without
+        discarding it.</dd>
+      </div>
+      <div>
+        <dt>Known limitations</dt>
+        <dd>242 works are set across multiple years, so their single recorded
+        year is a judgement call made by whoever built the dataset &mdash; some of
+        the source values are genuinely vague (&ldquo;7th millennium or
+        beyond&rdquo;). The corpus is Wikipedia- and Wikidata-derived, so it
+        almost certainly documents recent English-language screen media better
+        than older or non-anglophone print; the rising counts per decade are
+        partly rising documentation rather than rising output. And the 2020s
+        cover five years, not ten.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <footer>
+    Source: Post45 Data Collective, futuristic fiction dataset
+    (<span class="num" id="f-nfile"></span> works, 1733&ndash;2024).
+    Generated <span id="f-date"></span> by
+    <span style="font-family:var(--f-sans)">code/experimental/05b_futuristic-fiction_report.R</span>.
+    Trends are ordinary least squares fits of log(horizon&nbsp;+&nbsp;1) on release
+    year, reported as percentage change per year with 95% confidence intervals.
+    Reproduce the analysis with
+    <span style="font-family:var(--f-sans)">code/experimental/05a_futuristic-fiction_exploratory.qmd</span>.
+  </footer>
+
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script>
+/* ============================================================================
+   DATA -- injected by code/05b_futuristic-fiction_report.R
+   ========================================================================== */
+const WORKS         = {{WORKS}};
+const DECADE_ALL    = {{DECADE_ALL}};
+const DECADE_MEDIUM = {{DECADE_MEDIUM}};
+const SLOPES        = {{SLOPES}};
+const COMPOSITION   = {{COMPOSITION}};
+const POOLED        = {{POOLED}};
+const DEEP_FUTURE   = {{DEEP_FUTURE}};
+const PALETTE       = {{PALETTE}};
+const META          = {{META}};
+
+/* ============================================================================
+   SMALL HELPERS
+   ========================================================================== */
+
+const NS = 'http://www.w3.org/2000/svg';
+
+/** Create an SVG element with attributes, optionally appending it to a parent. */
+function el(tag, attrs, parent) {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) {
+    if (attrs[k] !== null && attrs[k] !== undefined) n.setAttribute(k, attrs[k]);
+  }
+  if (parent) parent.appendChild(n);
+  return n;
+}
+
+/** Linear scale: maps a value from [d0,d1] onto [r0,r1]. */
+function lin(d0, d1, r0, r1) {
+  return v => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
+}
+
+/** Log scale on log10(v + 1), so a horizon of zero maps to the axis floor. */
+function logp(d0, d1, r0, r1) {
+  const a = Math.log10(d0 + 1), b = Math.log10(d1 + 1);
+  return v => r0 + (Math.log10(Math.max(v, 0) + 1) - a) / (b - a) * (r1 - r0);
+}
+
+const fmt = n => Number(n).toLocaleString('en-US');
+
+/** Human-readable horizon, from "the same year" up to "100 trillion years". */
+function fmtYears(v) {
+  if (v === 0) return 'the same year';
+  if (v < 1000) return fmt(v) + (v === 1 ? ' year' : ' years');
+  if (v < 1e6)  return fmt(Math.round(v / 100) / 10) + 'k years';
+  if (v < 1e9)  return trim(v / 1e6) + ' million years';
+  if (v < 1e12) return trim(v / 1e9) + ' billion years';
+  return trim(v / 1e12) + ' trillion years';
+}
+const trim = v => Number(v.toFixed(v < 10 ? 1 : 0)).toLocaleString('en-US');
+
+const pct = v => (v > 0 ? '+' : '−') + Math.abs(v).toFixed(2) + '%';
+
+/* ---------- theme ---------- */
+
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+/** Convert a hex colour to HSL, raise its lightness, and return hex again.
+ *  Used to lift the R-supplied palette into readable colours on a dark ground,
+ *  so R stays the single source of truth for which hue means which medium. */
+function liftForDark(hex) {
+  const m = hex.replace('#', '');
+  let r = parseInt(m.slice(0, 2), 16) / 255,
+      g = parseInt(m.slice(2, 4), 16) / 255,
+      b = parseInt(m.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  const d = max - min;
+  if (d === 0) { h = 0; s = 0; }
+  else {
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  l = 0.66; s = Math.min(s * 0.82, 0.62);
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1; if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  const to = x => Math.round(hue2rgb(p, q, x) * 255).toString(16).padStart(2, '0');
+  return '#' + to(h + 1/3) + to(h) + to(h - 1/3);
+}
+
+let COLOR = {};
+function buildPalette() {
+  const dark = isDark();
+  COLOR = {};
+  for (const k in PALETTE) COLOR[k] = dark ? liftForDark(PALETTE[k]) : PALETTE[k];
+}
+
+/** Read a CSS custom property so SVG shapes follow the page theme. */
+const cssVar = n => getComputedStyle(document.documentElement)
+  .getPropertyValue(n).trim();
+
+/* ---------- tooltip ---------- */
+
+const tip = document.getElementById('tip');
+
+function showTip(html, x, y) {
+  tip.innerHTML = html;
+  tip.classList.add('on');
+  tip.setAttribute('aria-hidden', 'false');
+  const r = tip.getBoundingClientRect();
+  let tx = x + 16, ty = y + 16;
+  if (tx + r.width  > window.innerWidth  - 10) tx = x - r.width  - 16;
+  if (ty + r.height > window.innerHeight - 10) ty = y - r.height - 16;
+  tip.style.left = Math.max(8, tx) + 'px';
+  tip.style.top  = Math.max(8, ty) + 'px';
+}
+function hideTip() {
+  tip.classList.remove('on');
+  tip.setAttribute('aria-hidden', 'true');
+}
+
+/** Tooltip markup for one work. */
+function workTip(w) {
+  const overtaken = w.ys <= META.current_year;
+  return `
+    <div class="t-medium"><span class="dot" style="background:${COLOR[w.md]}"></span>${w.md}</div>
+    <div class="t-title">${w.ti}</div>
+    <div class="t-cr">${w.cr}${w.gn ? ' &middot; ' + w.gn : ''}</div>
+    <div class="t-row"><span>Released</span><span>${w.rl}</span></div>
+    <div class="t-row"><span>Set in</span><span>${fmt(w.ys)}${overtaken ? ' (past)' : ''}</span></div>
+    <div class="t-row"><span>Looks ahead</span><span>${fmtYears(w.hz)}</span></div>
+    ${w.pr ? `<div class="t-pred">${w.pr}</div>` : ''}`;
+}
+
+/* ---------- shared medium filter ---------- */
+
+const MEDIA = Object.keys(PALETTE);
+
+/** Build a row of toggle chips. Calls onChange(activeSet) whenever one flips. */
+function buildChips(container, onChange) {
+  const active = new Set(MEDIA);
+  MEDIA.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.type = 'button';
+    b.setAttribute('aria-pressed', 'true');
+    b.innerHTML = `<span class="dot" style="background:${COLOR[m]}"></span>${m}`;
+    b.addEventListener('click', () => {
+      if (active.has(m)) active.delete(m); else active.add(m);
+      // Never let the reader empty the chart completely.
+      if (active.size === 0) { active.add(m); return; }
+      b.setAttribute('aria-pressed', active.has(m) ? 'true' : 'false');
+      onChange(active);
+    });
+    container.appendChild(b);
+  });
+  container.__refresh = () => {
+    container.querySelectorAll('.chip .dot').forEach((d, i) => {
+      d.style.background = COLOR[MEDIA[i]];
+    });
+  };
+  return active;
+}
+
+/* ============================================================================
+   CHART 1 -- THE REACH
+   Every work as one mark: x = release year, y = horizon (log).
+   ========================================================================== */
+
+const C1 = { W: 940, H: 560, L: 78, R: 128, T: 26, B: 52 };
+let c1Active;
+
+function drawC1(active) {
+  const svg = document.getElementById('c1');
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${C1.W} ${C1.H}`);
+
+  const x = lin(1947, 2026, C1.L, C1.W - C1.R);
+  const rule = cssVar('--rule-soft'), muted = cssVar('--muted'), ink = cssVar('--ink');
+
+  // --- A PIECEWISE Y AXIS --------------------------------------------------
+  // Horizons run from 0 to 100 trillion years. Even on a log scale that is 14
+  // decades, and only ~50 of the 2,325 works sit above 10,000 years -- so a
+  // single log axis would spend 70% of its height on 2% of the data and squash
+  // everything else into a band at the bottom.
+  //
+  // Instead the axis breaks: the lower 74% covers 0 to 10,000 years, where
+  // almost every work lives, and the top 26% covers 10,000 up to 100 trillion.
+  // The break is drawn so the change of scale is visible, not hidden.
+  const yBreak = 1e4, GAPY = 16;
+  const plotTop = C1.T, plotBot = C1.H - C1.B;
+  const splitY = plotTop + (plotBot - plotTop) * 0.26;
+
+  const yLow  = logp(0, yBreak, plotBot, splitY + GAPY);
+  const lgA = Math.log10(yBreak), lgB = Math.log10(1e14);
+  const yHigh = v => splitY - (Math.log10(v) - lgA) / (lgB - lgA) * (splitY - plotTop);
+  const y = v => v <= yBreak ? yLow(v) : yHigh(v);
+
+  // --- y axis: gridlines and labels at meaningful horizons ------------------
+  [[0, 'same year'], [10, '10 years'], [100, '100 years'],
+   [1000, '1,000 years'], [1e4, '10,000'],
+   [1e6, '1 million'], [1e9, '1 billion'], [1e14, '100 trillion']
+  ].forEach(([v, lab]) => {
+    el('line', { x1: C1.L, x2: C1.W - C1.R, y1: y(v), y2: y(v),
+                 stroke: rule, 'stroke-width': 1 }, svg);
+    el('text', { x: C1.L - 9, y: y(v) + 4, 'text-anchor': 'end',
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+                 fill: muted }, svg).textContent = lab;
+  });
+
+  // The break: two slashes across the left edge where the scale changes.
+  [0, 5].forEach(o => {
+    el('line', { x1: C1.L - 5, y1: splitY + GAPY - 3 + o,
+                 x2: C1.L + 7, y2: splitY + GAPY - 11 + o,
+                 stroke: ink, 'stroke-width': 1.1 }, svg);
+  });
+  el('text', { x: C1.W - C1.R, y: splitY + GAPY - 5, 'text-anchor': 'end',
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 10,
+               'font-weight': 700, 'letter-spacing': '0.06em',
+               fill: muted }, svg).textContent = 'SCALE COMPRESSES ABOVE HERE';
+
+  // --- x axis --------------------------------------------------------------
+  el('line', { x1: C1.L, x2: C1.W - C1.R, y1: C1.H - C1.B, y2: C1.H - C1.B,
+               stroke: ink, 'stroke-width': 1.2 }, svg);
+  for (let yr = 1950; yr <= 2020; yr += 10) {
+    el('text', { x: x(yr), y: C1.H - C1.B + 20, 'text-anchor': 'middle',
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 11.5,
+                 fill: muted }, svg).textContent = yr;
+  }
+  el('text', { x: C1.L, y: C1.H - 10,
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+               'font-weight': 600, fill: muted,
+               'letter-spacing': '0.08em' }, svg).textContent = 'RELEASE YEAR →';
+
+  // --- the marks: one circle per work --------------------------------------
+  const dots = el('g', {}, svg);
+  const shown = WORKS.filter(w => active.has(w.md));
+  shown.forEach((w, i) => {
+    // Deterministic jitter so the layout is stable between redraws.
+    const j = (((i * 2654435761) % 997) / 997 - 0.5) * 7.5;
+    const c = el('circle', {
+      cx: x(w.rl) + j, cy: y(w.hz), r: 2.5,
+      fill: COLOR[w.md], 'fill-opacity': 0.5,
+      'data-i': WORKS.indexOf(w), style: 'cursor:crosshair'
+    }, dots);
+    c.__w = w;
+  });
+
+  // --- median trend line per medium ----------------------------------------
+  // Direct end-labels replace a legend, but several media finish at almost the
+  // same height, so their labels are collected here and spread apart below.
+  const endLabels = [];
+
+  MEDIA.forEach(m => {
+    if (!active.has(m)) return;
+    const pts = DECADE_MEDIUM.filter(d => d.md === m)
+      .sort((a, b) => a.dec - b.dec)
+      // Plot each decade's median at the decade's midpoint.
+      .map(d => [x(d.dec + 5), y(d.median_horizon), d]);
+    if (pts.length < 2) return;
+
+    el('polyline', {
+      points: pts.map(p => p[0] + ',' + p[1]).join(' '),
+      fill: 'none', stroke: cssVar('--ground'), 'stroke-width': 5.5,
+      'stroke-linejoin': 'round', 'stroke-opacity': 0.85
+    }, svg);
+    el('polyline', {
+      points: pts.map(p => p[0] + ',' + p[1]).join(' '),
+      fill: 'none', stroke: COLOR[m], 'stroke-width': 2.4,
+      'stroke-linejoin': 'round'
+    }, svg);
+
+    pts.forEach(p => {
+      const c = el('circle', { cx: p[0], cy: p[1], r: 3.4, fill: COLOR[m],
+                               stroke: cssVar('--ground'), 'stroke-width': 1.4,
+                               style: 'cursor:crosshair' }, svg);
+      c.__d = p[2];
+    });
+
+    const last = pts[pts.length - 1];
+    endLabels.push({ m: m, x: last[0], y: last[1] });
+  });
+
+  // Spread the end-labels vertically so none overlaps another, then join each
+  // one back to its line with a short leader where it had to move.
+  endLabels.sort((a, b) => a.y - b.y);
+  const MIN_GAP = 15;
+  for (let i = 1; i < endLabels.length; i++) {
+    const need = endLabels[i - 1].ly !== undefined
+      ? endLabels[i - 1].ly + MIN_GAP : endLabels[i - 1].y + MIN_GAP;
+    endLabels[i - 1].ly = endLabels[i - 1].ly ?? endLabels[i - 1].y;
+    endLabels[i].ly = Math.max(endLabels[i].y, need);
+  }
+  if (endLabels.length) endLabels[0].ly = endLabels[0].ly ?? endLabels[0].y;
+
+  endLabels.forEach(L => {
+    if (Math.abs(L.ly - L.y) > 1.5) {
+      el('line', { x1: L.x + 4, y1: L.y, x2: L.x + 12, y2: L.ly - 3,
+                   stroke: COLOR[L.m], 'stroke-width': 0.9,
+                   'stroke-opacity': 0.7 }, svg);
+    }
+    el('text', { x: L.x + 15, y: L.ly + 4,
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 12,
+                 'font-weight': 700, fill: COLOR[L.m] }, svg).textContent = L.m;
+  });
+
+  // --- name the deep-future works ------------------------------------------
+  DEEP_FUTURE.forEach((w, i) => {
+    if (!active.has(w.md)) return;
+    const px = x(w.rl), py = y(w.hz);
+    const lx = px + (i === 0 ? 16 : 14), ly = py + (i === 0 ? -10 : 4 + i * 2);
+    el('line', { x1: px + 4, y1: py, x2: lx - 3, y2: ly - 3,
+                 stroke: cssVar('--muted'), 'stroke-width': 0.8 }, svg);
+    const t = el('text', { x: lx, y: ly,
+                 'font-family': 'Source Serif 4, serif', 'font-size': 12,
+                 'font-style': 'italic', fill: cssVar('--ink') }, svg);
+    t.textContent = w.ti;
+    el('tspan', { dx: 5, 'font-style': 'normal', 'font-size': 10.5,
+                  fill: cssVar('--muted'),
+                  'font-family': 'Libre Franklin, sans-serif' }, t)
+      .textContent = fmtYears(w.hz);
+  });
+
+  // --- count readout -------------------------------------------------------
+  el('text', { x: C1.W - C1.R, y: C1.T + 2, 'text-anchor': 'end',
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11.5,
+               fill: muted }, svg).textContent =
+    fmt(shown.length) + ' works shown';
+
+  // --- hover, via one delegated listener ----------------------------------
+  svg.onmousemove = e => {
+    const t = e.target;
+    if (t.__w) { showTip(workTip(t.__w), e.clientX, e.clientY); t.setAttribute('r', 4.5); }
+    else if (t.__d) {
+      const d = t.__d;
+      showTip(`<div class="t-medium"><span class="dot" style="background:${COLOR[d.md]}"></span>${d.md}</div>
+        <div class="t-title">${d.dec}s median</div>
+        <div class="t-row"><span>Median horizon</span><span>${fmtYears(d.median_horizon)}</span></div>
+        <div class="t-row"><span>Works</span><span>${d.n}</span></div>
+        <div class="t-row"><span>Middle half</span><span>${fmtYears(d.q25)} – ${fmtYears(d.q75)}</span></div>`,
+        e.clientX, e.clientY);
+    } else hideTip();
+  };
+  svg.onmouseout = e => {
+    if (e.target.__w) e.target.setAttribute('r', 2.5);
+    hideTip();
+  };
+}
+
+/* ============================================================================
+   CHART 2 -- FIVE VERDICTS (small multiples)
+   ========================================================================== */
+
+function drawC2() {
+  const host = document.getElementById('c2');
+  host.innerHTML = '';
+
+  // Shared y domain across panels, so panel heights mean the same thing.
+  const vals = DECADE_MEDIUM.map(d => d.median_horizon);
+  const yMin = Math.min(...vals) * 0.7, yMax = Math.max(...vals) * 1.3;
+  const nMax = Math.max(...DECADE_MEDIUM.map(d => d.n));
+
+  const P = { W: 230, H: 132, L: 36, R: 8, T: 10, B: 22 };
+
+  // Order the panels by their slope, most contracting first.
+  SLOPES.forEach(s => {
+    const m = s.md;
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.style.borderTopColor = COLOR[m];
+
+    wrap.innerHTML =
+      `<div class="panel-name">${m}</div>
+       <div class="panel-n">${fmt(s.n)} works</div>`;
+
+    const svg = el('svg', { viewBox: `0 0 ${P.W} ${P.H}`, role: 'img',
+      'aria-label': `${m}: median horizon by decade` });
+    wrap.appendChild(svg);
+
+    const x = lin(1950, 2025, P.L, P.W - P.R);
+    const y = logp(yMin, yMax, P.H - P.B, P.T);
+
+    // Reference gridlines at round horizons inside the shared domain.
+    [10, 100, 1000].forEach(v => {
+      if (v < yMin || v > yMax) return;
+      el('line', { x1: P.L, x2: P.W - P.R, y1: y(v), y2: y(v),
+                   stroke: cssVar('--rule-soft'), 'stroke-width': 1 }, svg);
+      el('text', { x: P.L - 5, y: y(v) + 3.5, 'text-anchor': 'end',
+                   'font-family': 'Libre Franklin, sans-serif', 'font-size': 9,
+                   fill: cssVar('--muted') }, svg).textContent = fmt(v);
+    });
+
+    el('line', { x1: P.L, x2: P.W - P.R, y1: P.H - P.B, y2: P.H - P.B,
+                 stroke: cssVar('--rule'), 'stroke-width': 1 }, svg);
+    [1950, 2020].forEach(yr => {
+      el('text', { x: x(yr + 5), y: P.H - P.B + 14, 'text-anchor': 'middle',
+                   'font-family': 'Libre Franklin, sans-serif', 'font-size': 9.5,
+                   fill: cssVar('--muted') }, svg).textContent = "'" + String(yr).slice(2);
+    });
+
+    const pts = DECADE_MEDIUM.filter(d => d.md === m)
+      .sort((a, b) => a.dec - b.dec)
+      .map(d => [x(d.dec + 5), y(d.median_horizon), d]);
+
+    if (pts.length > 1) {
+      el('polyline', { points: pts.map(p => p[0] + ',' + p[1]).join(' '),
+                       fill: 'none', stroke: COLOR[m], 'stroke-width': 1.8,
+                       'stroke-linejoin': 'round' }, svg);
+    }
+    pts.forEach(p => {
+      const c = el('circle', { cx: p[0], cy: p[1],
+        r: 2 + 3.4 * Math.sqrt(p[2].n / nMax),
+        fill: COLOR[m], 'fill-opacity': 0.85,
+        stroke: cssVar('--ground'), 'stroke-width': 1,
+        style: 'cursor:crosshair' }, svg);
+      c.__d = p[2];
+    });
+
+    svg.onmousemove = e => {
+      const d = e.target.__d;
+      if (!d) { hideTip(); return; }
+      showTip(`<div class="t-medium"><span class="dot" style="background:${COLOR[m]}"></span>${m}</div>
+        <div class="t-title">${d.dec}s</div>
+        <div class="t-row"><span>Median horizon</span><span>${fmtYears(d.median_horizon)}</span></div>
+        <div class="t-row"><span>Works</span><span>${d.n}</span></div>`,
+        e.clientX, e.clientY);
+    };
+    svg.onmouseout = hideTip;
+
+    const contracting = s.verdict === 'contracting';
+    const stat = document.createElement('div');
+    stat.className = 'panel-stat';
+    stat.style.color = contracting ? cssVar('--flag') : cssVar('--muted');
+    stat.textContent = pct(s.pct_per_year) + ' / yr';
+    wrap.appendChild(stat);
+
+    const ci = document.createElement('div');
+    ci.className = 'panel-ci';
+    ci.textContent = '95% CI ' + pct(s.pct_per_year_low) + ' to ' + pct(s.pct_per_year_high);
+    wrap.appendChild(ci);
+
+    const v = document.createElement('span');
+    v.className = 'verdict ' + (contracting ? 'contracting' : 'flat');
+    v.textContent = contracting ? 'contracting' : 'no change';
+    wrap.appendChild(v);
+
+    host.appendChild(wrap);
+  });
+}
+
+/* ============================================================================
+   CHART 3 -- THE CHANGING CENSUS (stacked area)
+   ========================================================================== */
+
+const C3 = { W: 940, H: 380, L: 52, R: 152, T: 20, B: 44 };
+
+function drawC3() {
+  const svg = document.getElementById('c3');
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${C3.W} ${C3.H}`);
+
+  const decades = [...new Set(COMPOSITION.map(d => d.dec))].sort((a, b) => a - b);
+
+  // Bottom-to-top order: the medium that dominated at the start goes first, so
+  // the chart reads as one form being displaced by another.
+  const order = ['prose fiction', 'television', 'comics', 'film', 'video game']
+    .filter(m => MEDIA.includes(m));
+
+  // Fill the grid: a medium absent from a decade has a share of zero, and the
+  // stack needs that explicit rather than missing.
+  const share = {};
+  decades.forEach(d => {
+    share[d] = {};
+    order.forEach(m => {
+      const row = COMPOSITION.find(c => c.dec === d && c.md === m);
+      share[d][m] = row ? row.share : 0;
+    });
+  });
+
+  const x = lin(decades[0], decades[decades.length - 1], C3.L, C3.W - C3.R);
+  const y = lin(0, 1, C3.H - C3.B, C3.T);
+
+  // y gridlines
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+    el('line', { x1: C3.L, x2: C3.W - C3.R, y1: y(v), y2: y(v),
+                 stroke: v === 0 ? cssVar('--ink') : cssVar('--rule-soft'),
+                 'stroke-width': v === 0 ? 1.2 : 1 }, svg);
+    el('text', { x: C3.L - 8, y: y(v) + 4, 'text-anchor': 'end',
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+                 fill: cssVar('--muted') }, svg).textContent = (v * 100) + '%';
+  });
+
+  // Build each band as a closed polygon between its lower and upper edges.
+  const base = {};
+  decades.forEach(d => base[d] = 0);
+
+  order.forEach(m => {
+    const top = decades.map(d => [x(d), y(base[d] + share[d][m])]);
+    const bot = decades.map(d => [x(d), y(base[d])]).reverse();
+    el('polygon', {
+      points: top.concat(bot).map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' '),
+      fill: COLOR[m], 'fill-opacity': 0.88,
+      stroke: cssVar('--ground'), 'stroke-width': 1
+    }, svg);
+
+    // Right-edge direct label with the first and last shares.
+    const lastD = decades[decades.length - 1];
+    const midY = y(base[lastD] + share[lastD][m] / 2);
+    const t = el('text', { x: C3.W - C3.R + 10, y: midY + 4,
+      'font-family': 'Libre Franklin, sans-serif', 'font-size': 12,
+      'font-weight': 700, fill: COLOR[m] }, svg);
+    t.textContent = m;
+    el('tspan', { x: C3.W - C3.R + 10, dy: 14, 'font-size': 10.5,
+                  'font-weight': 500, fill: cssVar('--muted') }, t).textContent =
+      Math.round(share[decades[0]][m] * 100) + '% → ' +
+      Math.round(share[lastD][m] * 100) + '%';
+
+    decades.forEach(d => base[d] += share[d][m]);
+  });
+
+  // x axis labels
+  decades.forEach(d => {
+    el('text', { x: x(d), y: C3.H - C3.B + 20, 'text-anchor': 'middle',
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 11.5,
+                 fill: cssVar('--muted') }, svg).textContent = d + 's';
+  });
+
+  // Hover: a vertical rule plus a full readout for the nearest decade.
+  const hover = el('line', { y1: C3.T, y2: C3.H - C3.B, stroke: cssVar('--ink'),
+                             'stroke-width': 1, 'stroke-dasharray': '3 3',
+                             opacity: 0 }, svg);
+  const hit = el('rect', { x: C3.L, y: C3.T, width: C3.W - C3.R - C3.L,
+                           height: C3.H - C3.B - C3.T, fill: 'transparent',
+                           style: 'cursor:crosshair' }, svg);
+
+  hit.addEventListener('mousemove', e => {
+    const box = svg.getBoundingClientRect();
+    const px = (e.clientX - box.left) / box.width * C3.W;
+    // Find the decade whose x position is closest to the pointer.
+    let best = decades[0], bd = Infinity;
+    decades.forEach(d => { const dd = Math.abs(x(d) - px); if (dd < bd) { bd = dd; best = d; } });
+    hover.setAttribute('x1', x(best)); hover.setAttribute('x2', x(best));
+    hover.setAttribute('opacity', 1);
+
+    const total = COMPOSITION.filter(c => c.dec === best)
+      .reduce((s, c) => s + c.n, 0);
+    const rows = order.slice().reverse().map(m =>
+      `<div class="t-row"><span><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${COLOR[m]};margin-right:6px"></span>${m}</span><span>${Math.round(share[best][m] * 100)}%</span></div>`
+    ).join('');
+    showTip(`<div class="t-title">${best}s</div>
+      <div class="t-cr">${fmt(total)} works${best === 2020 ? ' (2020–2024)' : ''}</div>${rows}`,
+      e.clientX, e.clientY);
+  });
+  hit.addEventListener('mouseout', () => { hover.setAttribute('opacity', 0); hideTip(); });
+}
+
+/* ============================================================================
+   CHART 4 -- THE CALENDAR OF IMAGINED FUTURES (unit chart)
+   One dot per work, stacked above the year it is set in.
+   ========================================================================== */
+
+const C4 = { W: 940, L: 46, R: 26, T: 56, B: 52, DOT: 3.4, GAP: 16,
+             SPLIT: 0.66, TAIL_BINS: 10 };
+let c4Active;
+
+/** Compact year label: 2150, 3000, 10k, 1M, 100tn. */
+function fmtYearShort(y) {
+  if (y < 10000) return String(Math.round(y));
+  if (y < 1e6)   return Math.round(y / 1000) + 'k';
+  if (y < 1e9)   return Math.round(y / 1e6) + 'M';
+  if (y < 1e12)  return Math.round(y / 1e9) + 'bn';
+  return Math.round(y / 1e12) + 'tn';
+}
+
+function drawC4(active) {
+  const svg = document.getElementById('c4');
+  svg.innerHTML = '';
+
+  const from = META.calendar_from, brk = META.calendar_break;
+  const shown = WORKS.filter(w => active.has(w.md));
+
+  // --- A PIECEWISE X AXIS --------------------------------------------------
+  // Imagined years run from 1950 to 100 trillion. No single continuous axis can
+  // show that, and cropping the tail would delete the corpus's most ambitious
+  // works -- exactly the ones this report argues for keeping.
+  //
+  // So the axis has two halves, separated by a visible break:
+  //   left  : linear, one column per year, up to `brk`
+  //   right : the remaining works split into bins of EQUAL COUNT
+  //
+  // Equal-count bins matter. A log scale here would pile roughly 370 of the 551
+  // tail works into two columns, because most of them sit just past the break
+  // while a handful sit millions of years out. Equal-count bins keep every
+  // column a comparable height, so the eye reads quantity rather than scale.
+  const xEnd   = C4.W - C4.R;
+  const xSplit = C4.L + (xEnd - C4.L) * C4.SPLIT;
+  const xLin   = lin(from, brk, C4.L, xSplit);
+
+  const cols = new Map();   // key -> { x, label, works[], tailLabel }
+
+  // --- left half: one column per imagined year -----------------------------
+  shown.filter(w => w.ys <= brk).forEach(w => {
+    const yr = Math.round(w.ys);
+    const key = 'y' + yr;
+    if (!cols.has(key)) cols.set(key, { x: xLin(yr), label: String(yr), works: [] });
+    cols.get(key).works.push(w);
+  });
+
+  // --- right half: equal-count bins ---------------------------------------
+  const tail = shown.filter(w => w.ys > brk).sort((a, b) => a.ys - b.ys);
+  const K = Math.min(C4.TAIL_BINS, Math.max(1, tail.length));
+  const tailW = xEnd - (xSplit + C4.GAP);
+  const tailBins = [];
+
+  for (let i = 0; i < K; i++) {
+    const s = Math.floor(i * tail.length / K);
+    const e = Math.floor((i + 1) * tail.length / K);
+    if (e <= s) continue;
+    const slice = tail.slice(s, e);
+    tailBins.push({
+      x: xSplit + C4.GAP + tailW * ((i + 0.5) / K),
+      label: null,                       // not a single year, so not year-labelled
+      works: slice,
+      lo: slice[0].ys,
+      hi: slice[slice.length - 1].ys
+    });
+  }
+  tailBins.forEach((b, i) => cols.set('t' + i, b));
+  const beyond = tail.length;
+
+  // Sort within each column so colours band rather than scatter -- a small
+  // ordering choice that makes the medium mix legible at a glance.
+  const mediumRank = {}; MEDIA.forEach((m, i) => mediumRank[m] = i);
+  cols.forEach(c => c.works.sort((a, b) => mediumRank[a.md] - mediumRank[b.md]));
+
+  const tallest = Math.max(1, ...[...cols.values()].map(c => c.works.length));
+  const H = C4.T + C4.B + tallest * C4.DOT;
+  svg.setAttribute('viewBox', `0 0 ${C4.W} ${Math.round(H)}`);
+  const baseY = H - C4.B;
+
+  // --- "already overtaken" background band --------------------------------
+  const nowX = xLin(META.current_year);
+  el('rect', { x: C4.L, y: C4.T - 14, width: nowX - C4.L, height: baseY - C4.T + 14,
+               fill: cssVar('--panel'), 'fill-opacity': 0.9 }, svg);
+
+  // --- tail-section background, so the change of scale is unmissable ------
+  el('rect', { x: xSplit + C4.GAP, y: C4.T - 14, width: tailW,
+               height: baseY - C4.T + 14, fill: cssVar('--panel'),
+               'fill-opacity': 0.55 }, svg);
+
+  // --- axis ---------------------------------------------------------------
+  el('line', { x1: C4.L, x2: xSplit, y1: baseY, y2: baseY,
+               stroke: cssVar('--ink'), 'stroke-width': 1.2 }, svg);
+  el('line', { x1: xSplit + C4.GAP, x2: xEnd, y1: baseY, y2: baseY,
+               stroke: cssVar('--ink'), 'stroke-width': 1.2 }, svg);
+
+  // The break itself: two slashes across the axis where the scale changes.
+  [0, 4].forEach(o => {
+    el('line', { x1: xSplit + 3 + o, y1: baseY + 5, x2: xSplit + 9 + o, y2: baseY - 5,
+                 stroke: cssVar('--ink'), 'stroke-width': 1.1 }, svg);
+  });
+
+  // Year ticks on the linear half.
+  for (let yr = from; yr <= brk; yr += 50) {
+    el('line', { x1: xLin(yr), x2: xLin(yr), y1: baseY, y2: baseY + 5,
+                 stroke: cssVar('--muted'), 'stroke-width': 1 }, svg);
+    el('text', { x: xLin(yr), y: baseY + 19, 'text-anchor': 'middle',
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+                 fill: cssVar('--muted') }, svg).textContent = yr;
+  }
+
+  // Range labels on the tail half, every other bin so they do not collide.
+  tailBins.forEach((b, i) => {
+    if (i % 2 !== 0) return;
+    el('line', { x1: b.x, x2: b.x, y1: baseY, y2: baseY + 5,
+                 stroke: cssVar('--muted'), 'stroke-width': 1 }, svg);
+    el('text', { x: b.x, y: baseY + 19, 'text-anchor': 'middle',
+                 'font-family': 'Libre Franklin, sans-serif', 'font-size': 10,
+                 'font-weight': 600, fill: cssVar('--muted') }, svg)
+      .textContent = fmtYearShort(b.lo);
+  });
+
+  el('text', { x: C4.L, y: baseY + 42,
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+               'font-weight': 600, 'letter-spacing': '0.08em',
+               fill: cssVar('--muted') }, svg).textContent =
+    'YEAR THE WORK IS SET IN →';
+
+  el('text', { x: xSplit + C4.GAP + tailW / 2, y: C4.T - 24, 'text-anchor': 'middle',
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 10.5,
+               'font-weight': 700, 'letter-spacing': '0.07em',
+               fill: cssVar('--muted') }, svg).textContent = 'THE DEEP FUTURE';
+  el('text', { x: xSplit + C4.GAP + tailW / 2, y: C4.T - 10, 'text-anchor': 'middle',
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 10.5,
+               fill: cssVar('--muted') }, svg).textContent =
+    fmt(beyond) + ' works beyond ' + brk + ', in equal-sized groups';
+
+  // --- the dots -----------------------------------------------------------
+  const g = el('g', {}, svg);
+  cols.forEach(col => {
+    col.works.forEach((w, i) => {
+      const past = w.ys <= META.current_year;
+      const c = el('circle', {
+        cx: col.x, cy: baseY - 2 - i * C4.DOT, r: 1.55,
+        fill: COLOR[w.md], 'fill-opacity': past ? 0.45 : 0.9,
+        style: 'cursor:crosshair'
+      }, g);
+      c.__w = w;
+    });
+  });
+
+  // --- the "now" line -----------------------------------------------------
+  el('line', { x1: nowX, x2: nowX, y1: C4.T - 14, y2: baseY + 5,
+               stroke: cssVar('--flag'), 'stroke-width': 1.4 }, svg);
+  el('text', { x: nowX - 7, y: C4.T - 20, 'text-anchor': 'end',
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11.5,
+               'font-weight': 700, fill: cssVar('--flag') }, svg).textContent =
+    'NOW (' + META.current_year + ')';
+  el('text', { x: nowX - 7, y: C4.T - 5, 'text-anchor': 'end',
+               'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+               fill: cssVar('--muted') }, svg).textContent =
+    '← these futures have expired';
+
+  // --- annotate the tallest columns, which are the round years ------------
+  [...cols.values()]
+    .filter(c => c.label && c.works.length >= tallest * 0.42)
+    .sort((a, b) => b.works.length - a.works.length)
+    .slice(0, 5)
+    .forEach(col => {
+      const topY = baseY - 2 - (col.works.length - 1) * C4.DOT;
+      el('text', { x: col.x, y: topY - 8, 'text-anchor': 'middle',
+                   'font-family': 'Libre Franklin, sans-serif', 'font-size': 11,
+                   'font-weight': 700, fill: cssVar('--ink') }, svg)
+        .textContent = col.label;
+      el('text', { x: col.x, y: topY - 20, 'text-anchor': 'middle',
+                   'font-family': 'Libre Franklin, sans-serif', 'font-size': 10,
+                   fill: cssVar('--muted') }, svg)
+        .textContent = col.works.length;
+    });
+
+  // --- hover ---------------------------------------------------------------
+  svg.onmousemove = e => {
+    const t = e.target;
+    if (t.__w) { showTip(workTip(t.__w), e.clientX, e.clientY); t.setAttribute('r', 3.4); }
+    else hideTip();
+  };
+  svg.onmouseout = e => { if (e.target.__w) e.target.setAttribute('r', 1.55); hideTip(); };
+
+  const drawn = [...cols.values()].reduce((s, c) => s + c.works.length, 0);
+  const deepest = tail.length ? tail[tail.length - 1] : null;
+  document.getElementById('c4-note').innerHTML =
+    `All ${fmt(drawn)} works are drawn — none is cropped away. Left of the break ` +
+    `the axis is linear and one column is one year. Right of it, the ${fmt(beyond)} ` +
+    `works set beyond ${brk} are divided into ${tailBins.length} groups of equal size, ` +
+    `each labelled with the year it starts from; a logarithmic axis would have crushed ` +
+    `most of them into two columns. ` +
+    (deepest ? `The deepest is <em>${deepest.ti}</em>, set in the year ${fmtYearShort(deepest.ys)}. ` : '') +
+    `Dots are stacked in medium order within each column, so the colour bands show ` +
+    `which media favour which years.`;
+}
+
+/* ============================================================================
+   TEXT INJECTION -- every figure in the prose comes from R
+   ========================================================================== */
+
+function fillText() {
+  const film  = SLOPES.find(s => s.md === 'film');
+  const prose = SLOPES.find(s => s.md === 'prose fiction');
+  const mixShare = Math.round(100 * (1 - META.control_pct / META.pooled_pct));
+
+  const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
+
+  set('d-n',      fmt(META.n_analysis));
+  set('d-m60',    fmt(META.med_1960));
+  set('d-m20',    fmt(META.med_2020));
+  set('d-date',   META.generated);
+  set('d-pooled', pct(META.pooled_pct));
+  set('d-pooled2',pct(META.pooled_pct));
+  set('d-ctrl',   pct(META.control_pct));
+  set('d-prose50',META.prose_1950s + '%');
+  set('d-prose20',META.prose_2020s + '%');
+  set('d-film50', META.film_1950s + '%');
+  set('d-film20', META.film_2020s + '%');
+  set('d-cell',   META.min_cell_n);
+  set('d-r2',     META.pooled_r2 + '%');
+  set('d-mix2',   mixShare + '%');
+  set('d-exp',    fmt(META.n_expired));
+  set('d-lead',   META.median_lead);
+  set('d-ends0',  META.pct_ends_0 + '%');
+  set('d-ends00', META.pct_ends_00 + '%');
+
+  set('k-film',  pct(film.pct_per_year));
+  set('k-prose', pct(prose.pct_per_year));
+  set('k-mix',   mixShare + '%');
+  set('k-exp',   META.pct_expired + '%');
+
+  set('m-compared', fmt(META.n_file - META.n_no_year));
+  set('m-noyear',   META.n_no_year);
+  set('m-old',      META.n_too_old);
+  set('m-first',    META.first_decade);
+  set('m-rare',     META.n_rare_medium);
+  set('m-n',        fmt(META.n_analysis));
+  set('m-media',    META.media_kept);
+  set('f-nfile',    fmt(META.n_file));
+  set('f-date',     META.generated);
+}
+
+/* ============================================================================
+   BOOT
+   ========================================================================== */
+
+function drawAll() {
+  buildPalette();
+  drawC1(c1Active);
+  drawC2();
+  drawC3();
+  drawC4(c4Active);
+  document.querySelectorAll('.controls').forEach(c => c.__refresh && c.__refresh());
+}
+
+function init() {
+  buildPalette();
+  fillText();
+
+  c1Active = buildChips(document.getElementById('c1-controls'), a => drawC1(a));
+  c4Active = buildChips(document.getElementById('c4-controls'), a => drawC4(a));
+
+  drawAll();
+
+  // Theme toggle, plus a listener so a system theme change redraws the charts
+  // (SVG colours are read from CSS variables at draw time, not bound to them).
+  const btn = document.getElementById('themeBtn');
+  const syncBtn = () => { btn.textContent = isDark() ? 'Light' : 'Dark'; };
+  syncBtn();
+  btn.addEventListener('click', () => {
+    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+    syncBtn();
+    drawAll();
+  });
+  window.matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', () => { syncBtn(); drawAll(); });
+
+  window.addEventListener('scroll', hideTip, { passive: true });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,734 @@
+---
+title: "Is the imagined future getting closer?"
+subtitle: "Exploratory analysis of 2,552 works of futuristic fiction, 1733–2024"
+author: "Jeremy Mikecz"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    df-print: paged
+    fig-width: 9
+    fig-height: 5.5
+editor: visual
+---
+
+## The question
+
+Every work of futuristic fiction contains a hidden number: the distance between
+the year it was made and the year it imagines. *2001: A Space Odyssey* (1968)
+looks 33 years ahead. *Blade Runner* (1982) looks 37 years ahead. H.G. Wells's
+*The Time Machine* (1895) looks 802,701 years ahead.
+
+Call that number the **horizon**. Our question:
+
+> **Has the horizon been shrinking?** Are storytellers setting their futures
+> closer and closer to the present than they used to?
+
+This notebook is *exploratory*. Its job is not to produce the final answer — it
+is to find out whether the data can support an answer at all, and to find the
+traps before they turn into mistakes. The polished result lives in
+`05b_futuristic-fiction_report.R`.
+
+We will work through four stages:
+
+1.  **Reconnaissance** — what is actually in this file?
+2.  **Data quality audit** — what will break if we don't look first?
+3.  **The headline pattern** — is there a trend?
+4.  **The confound** — is the trend what it looks like?
+
+------------------------------------------------------------------------
+
+## Setup
+
+### Packages
+
+```{r}
+#| label: packages
+#| message: false
+
+library(tidyverse)   # dplyr, ggplot2, readr, tibble, stringr, purrr...
+library(here)        # builds file paths from the project root, so this
+                     # notebook works no matter what folder you run it from
+library(scales)      # nicer axis labels (comma separators, log ticks)
+```
+
+------------------------------------------------------------------------
+
+## Settings
+
+::: callout-important
+## Everything adjustable lives here
+
+This is the only cell in the notebook with numbers you might want to change.
+Every decision the analysis makes is named and given a value here, so you can
+see all of them at once and test how much they matter. Nothing below this cell
+contains a hard-coded threshold.
+:::
+
+```{r}
+#| label: settings
+
+settings <- list(
+
+  # ---- Where things live ---------------------------------------------------
+  data_path = here("data", "post45_books", "original", "futuristic_fiction.csv"),
+
+  # Folder holding this notebook and its companion files. If you move this
+  # notebook, this is the only path you need to change.
+  code_dir = here("code", "experimental"),
+
+  # ---- Which rows to analyse ----------------------------------------------
+  # Earliest release decade to keep. Before 1950 there are fewer than ~30 works
+  # per decade -- too few for a median we'd want to draw a line through.
+  first_decade = 1950,
+
+  # A medium needs at least this many works overall to be included. This drops
+  # "ride" (2 works) and "illustration" (1 work).
+  min_medium_n = 50,
+
+  # ---- Which summaries to trust -------------------------------------------
+  # A decade x medium cell needs at least this many works before we report its
+  # median. Cells below the bar are shown as missing, not as a number.
+  min_cell_n = 10,
+
+  # A medium needs at least this many works before we fit it a trend line.
+  min_slope_n = 60,
+
+  # ---- Reference points ---------------------------------------------------
+  # "Now", used to work out which imagined futures have already been overtaken
+  # by real time. Change this if you rerun the notebook in a later year.
+  current_year = 2026,
+
+  # Horizons at or above this are flagged as "deep future" in plots. This is a
+  # LABELLING choice for readability, not a filter -- no rows are removed.
+  deep_future_threshold = 1e6
+)
+
+# Print the settings so the rendered notebook records what it was run with.
+str(settings, give.attr = FALSE)
+```
+
+### Shared functions
+
+The data-preparation steps live in a separate script so that this notebook and
+the report generator use *identical* logic. Open the file if you want to see how
+any of these functions work — each one has a comment block explaining it.
+
+```{r}
+#| label: source-utils
+#| message: false
+
+source(file.path(settings$code_dir, "R", "futuristic_fiction_utils.R"))
+```
+
+Functions we get from that file:
+
+| Function | What it does |
+|------------------------|-----------------------------------------------|
+| `ff_load_raw()` | Reads the CSV, drops the leftover pandas index column |
+| `ff_add_horizon()` | Adds `horizon` and `release_decade` |
+| `ff_build_analysis_set()` | Filters to usable rows, reporting every removal |
+| `ff_median_horizon()` | Median horizon + group size for any grouping |
+| `ff_composition()` | Share of each decade's works by medium |
+| `ff_slopes_by_medium()` | Fits one trend line per medium |
+| `ff_pooled_models()` | Fits the two pooled models |
+
+------------------------------------------------------------------------
+
+## Stage 1: Reconnaissance
+
+### Load the raw file
+
+```{r}
+#| label: load
+
+ff_raw <- ff_load_raw(settings$data_path)
+
+dim(ff_raw)
+```
+
+### What are the columns?
+
+```{r}
+#| label: glimpse
+
+glimpse(ff_raw)
+```
+
+### First few rows
+
+```{r}
+#| label: head
+
+ff_raw |>
+  select(title, creator, released, year_set, years_distant, medium, genre) |>
+  head(10)
+```
+
+Already we can see the shape of the thing: `released` is when the work came out,
+`year_set` is the year it depicts, and `years_distant` looks like the difference
+between them. Let's find out what each column really contains.
+
+### How much is missing?
+
+`across(everything(), ...)` applies the same summary to every column at once —
+far better than typing `sum(is.na(...))` seventeen times.
+
+```{r}
+#| label: missingness
+
+ff_raw |>
+  summarise(across(everything(), ~ sum(is.na(.x)))) |>
+  # pivot_longer turns the one-row-wide result into a readable tall table
+  pivot_longer(everything(), names_to = "column", values_to = "n_missing") |>
+  mutate(pct_missing = round(100 * n_missing / nrow(ff_raw), 1)) |>
+  arrange(desc(n_missing))
+```
+
+Read this carefully before deciding anything:
+
+-   **`year_set` is missing for only 10 rows.** This is the column our entire
+    question depends on, and it is 99.6% complete. Excellent news.
+-   **`verify_yr`, `notes`, `multiyears`, `is_series`, `predictions` are mostly
+    empty.** These are *annotation* columns — a researcher filled them in for
+    interesting cases and left them blank otherwise. Empty does not mean
+    "unknown"; it means "nothing to note". They are useful for enriching
+    individual works, useless for computing rates.
+-   **`creator` is missing for 58 works.** Not a problem for us, since we are
+    analysing works and not authors.
+
+### The columns that are not what they look like
+
+Two columns have names that will mislead you. Always print the actual values.
+
+```{r}
+#| label: trap-is-series
+
+# The name "is_series" strongly suggests a yes/no flag. It is not.
+ff_raw |>
+  count(is_series, sort = TRUE) |>
+  head(6)
+```
+
+`is_series` holds a **Wikidata identifier for the series a work belongs to**
+(`Q1092` is *Doctor Who*, `Q34316` is *Star Trek*), or `NA` if the work stands
+alone. Treating it as a boolean would silently turn every series ID into `TRUE`.
+Note also the single junk value `"y"` — one row where someone did treat it as a
+flag.
+
+```{r}
+#| label: trap-multiyears
+
+# "multiyears" is free text, not a number or a range we can parse arithmetically.
+ff_raw |>
+  filter(!is.na(multiyears)) |>
+  pull(multiyears) |>
+  head(8)
+```
+
+This matters for interpretation: **242 works are set across multiple years**, and
+for those, `year_set` is one representative year chosen by whoever built the
+dataset. Some of those choices are genuinely ambiguous ("Early in the 20th
+century", "7th millennium or beyond"). We will keep them, but it is a real
+limitation to state out loud rather than bury.
+
+### What media and genres are here?
+
+```{r}
+#| label: media
+
+ff_raw |> count(medium, sort = TRUE)
+```
+
+This is the single most important thing on this page. **This is not a dataset
+about novels.** Film is the largest medium, and video games — which did not
+exist for most of the period — account for 325 works. Any trend we find across
+the whole file will be entangled with this mix. Hold that thought.
+
+```{r}
+#| label: genres
+
+ff_raw |> count(genre, sort = TRUE) |> head(12)
+```
+
+`genre` is messy: free text, 341 missing, and values that mix genre with medium
+("first-person shooter", "tv series episode"). Usable for flavour in a tooltip;
+not usable as a clean grouping variable.
+
+------------------------------------------------------------------------
+
+## Stage 2: Data quality audit
+
+### Build our own `horizon` — then check the one we were given
+
+The file ships a `years_distant` column. We compute `horizon` ourselves and
+compare. This takes ten seconds and is the single highest-value habit in data
+work: **never trust a derived column you did not derive.**
+
+```{r}
+#| label: horizon
+
+ff <- ff_add_horizon(ff_raw)
+
+ff |>
+  filter(!is.na(year_set)) |>
+  summarise(
+    n_compared      = n(),
+    max_abs_diff    = max(abs(horizon - years_distant)),
+    n_disagreements = sum(abs(horizon - years_distant) > 0.5)
+  )
+```
+
+Zero disagreements across 2,542 works. `years_distant` is trustworthy, and so is
+our understanding of what these columns mean. If this check had failed we would
+have had to stop and work out why before going any further.
+
+### How is `horizon` distributed?
+
+```{r}
+#| label: horizon-dist
+
+ff |>
+  filter(!is.na(horizon)) |>
+  summarise(
+    min    = min(horizon),
+    q25    = quantile(horizon, 0.25),
+    median = median(horizon),
+    q75    = quantile(horizon, 0.75),
+    q99    = quantile(horizon, 0.99),
+    max    = max(horizon)
+  )
+```
+
+Look at the gap between the median (37 years) and the maximum (100 trillion).
+This distribution is *extraordinarily* skewed. Two immediate consequences:
+
+1.  **Use the median, never the mean.** One work set 100 trillion years out
+    would drag any average into nonsense.
+2.  **Plot on a log scale**, or 99% of the data will be squashed into a line at
+    the bottom of every chart.
+
+### Are the extreme values errors?
+
+This is the question that decides whether we delete rows. The tempting move is
+to call anything above a million "obviously bad data" and drop it. Let's look
+first.
+
+```{r}
+#| label: extremes
+
+ff |>
+  filter(horizon >= settings$deep_future_threshold) |>
+  select(title, creator, released, year_set, medium) |>
+  arrange(desc(year_set))
+```
+
+**These are all real.** Doctor Who's "Utopia" (2007) is genuinely set in the year
+100 trillion, at the end of the universe — that is the entire premise of the
+episode. Olaf Stapledon's *Last and First Men* (1930) really does span ten
+million years. Cixin Liu's *Death's End*, Arthur C. Clarke's *Against the Fall of
+Night*, Stephen Baxter's *Ring* — every one of these is a famous work of deep-time
+science fiction, correctly recorded.
+
+::: callout-warning
+## The trap we just avoided
+
+Had we filtered `year_set < 1e6` as "data cleaning", we would have deleted
+nineteen of the most ambitious works in the entire corpus — and we would have
+deleted them *precisely because* they answer our research question most
+emphatically. The distribution's tail is not noise here. It is the signal.
+
+We keep every one of them, and reach for log scales and medians instead. Both
+are immune to a long tail; neither requires throwing anything away.
+:::
+
+### Is `record_id` a unique key?
+
+```{r}
+#| label: duplicates
+
+ff |>
+  summarise(
+    n_rows              = n(),
+    n_distinct_record_id = n_distinct(record_id),
+    n_distinct_qid       = n_distinct(wikidata_work_qid),
+    n_dup_title_creator  = sum(duplicated(pick(title, creator, released)))
+  )
+```
+
+`record_id` repeats — it is **not** a unique key, despite the name. But
+title + creator + released has no duplicates at all. Let's see why the IDs repeat:
+
+```{r}
+#| label: dup-detail
+
+ff |>
+  filter(title == "The Time Machine") |>
+  select(record_id, title, creator, released, medium, year_set)
+```
+
+Three *different works* — Wells's 1895 novel and two film adaptations — sharing a
+slug-style ID. These are legitimately distinct rows that should not be
+de-duplicated. If we had run `distinct(record_id, .keep_all = TRUE)` we would
+have silently lost two films.
+
+### Do humans dream in round numbers?
+
+A quick check on how `year_set` values are distributed. If authors picked future
+years arbitrarily, years ending in 0 or 5 should appear about 20% of the time.
+
+```{r}
+#| label: round-numbers
+
+ff |>
+  filter(!is.na(year_set), year_set < settings$deep_future_threshold) |>
+  summarise(
+    n              = n(),
+    ends_in_0_or_5 = mean(year_set %% 5  == 0),
+    ends_in_0      = mean(year_set %% 10 == 0),
+    ends_in_00     = mean(year_set %% 100 == 0)
+  ) |>
+  mutate(across(starts_with("ends"), ~ round(.x, 3)))
+```
+
+Round years are heavily over-represented: 24% end in 0 (chance: 10%) and 8.5%
+end in "00" (chance: 1% — an eight-fold excess). Storytellers pick futures the
+way shopkeepers pick prices.
+
+```{r}
+#| label: round-numbers-plot
+
+ff |>
+  filter(!is.na(year_set), between(year_set, 1950, 2150)) |>
+  count(year_set) |>
+  ggplot(aes(year_set, n)) +
+  geom_col(width = 0.85, fill = "grey25") +
+  scale_x_continuous(breaks = seq(1950, 2150, 25)) +
+  labs(
+    title    = "Storytellers set their futures on round years",
+    subtitle = "Number of works set in each year, 1950–2150",
+    x = "Year the work is set in", y = "Number of works"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+The spikes at 2000, 2020, 2025, 2050 and 2100 are unmistakable. This is a real
+finding about how people imagine, and it also warns us that decade-level medians
+will be lumpy rather than smooth.
+
+------------------------------------------------------------------------
+
+## Stage 3: The headline pattern
+
+### Build the analysis set
+
+Now we apply our three filtering decisions. The function reports every removal.
+
+```{r}
+#| label: analysis-set
+
+ff_analysis <- ff_build_analysis_set(
+  ff,
+  first_decade = settings$first_decade,
+  min_medium_n = settings$min_medium_n
+)
+
+nrow(ff_analysis)
+```
+
+### Median horizon by decade
+
+```{r}
+#| label: decade-medians
+
+by_decade <- ff_median_horizon(ff_analysis, release_decade)
+by_decade
+```
+
+```{r}
+#| label: decade-plot
+
+ggplot(by_decade, aes(release_decade, median_horizon)) +
+  geom_line(linewidth = 1, colour = "grey40") +
+  geom_point(aes(size = n), colour = "#9a3324") +
+  geom_text(aes(label = n), vjust = -1.4, size = 3, colour = "grey40") +
+  scale_size_area(max_size = 7, guide = "none") +
+  labs(
+    title    = "The typical imagined future is getting closer",
+    subtitle = "Median years between a work's release and the year it depicts.\nPoint size and label show the number of works.",
+    x = "Release decade", y = "Median horizon (years)"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+There it is: a median horizon of **63 years in the 1960s falling to 24 years in
+the 2020s**. Roughly a two-thirds reduction. That looks like a clean, publishable
+finding.
+
+It is also where a careless analysis stops and a careful one starts.
+
+------------------------------------------------------------------------
+
+## Stage 4: The confound
+
+### What else changed over the same period?
+
+Remember the medium counts. Film and video games are recent arrivals. If those
+media happen to imagine nearer futures, then a decline in the pooled median could
+be caused entirely by the *mix* changing — with no individual medium changing at
+all.
+
+Two things have to be true for that alternative explanation to hold. Let's test
+both.
+
+**Test 1: do the media differ in how far ahead they look?**
+
+```{r}
+#| label: medium-medians
+
+ff_median_horizon(ff_analysis, medium) |>
+  arrange(median_horizon)
+```
+
+Yes, and dramatically. A typical video game looks 20 years ahead; a typical novel
+looks 55. That is nearly a three-fold difference between media.
+
+**Test 2: did the mix of media shift toward the short-horizon ones?**
+
+```{r}
+#| label: composition
+
+composition <- ff_composition(ff_analysis)
+
+composition |>
+  select(release_decade, medium, share) |>
+  mutate(share = round(share, 3)) |>
+  pivot_wider(names_from = medium, values_from = share)
+```
+
+```{r}
+#| label: composition-plot
+
+ggplot(composition, aes(release_decade, share, fill = medium)) +
+  geom_area(alpha = 0.9) +
+  scale_y_continuous(labels = label_percent()) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title    = "What changed was who was doing the imagining",
+    subtitle = "Share of futuristic works by medium, per release decade",
+    x = "Release decade", y = "Share of works", fill = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+```
+
+Both tests pass, decisively. **Prose fiction fell from 68% of futuristic works in
+the 1950s to 16% in the 2020s**, while film rose from 19% to 48% and video games
+went from nothing to a fifth of the corpus. The composition of this dataset
+transformed completely over exactly the period where we found our trend.
+
+So the pooled decline has at least two possible causes, and we cannot yet tell
+them apart:
+
+-   **(A)** Each medium is pulling its horizon in — imaginations really are
+    contracting.
+-   **(B)** The mix shifted toward media that always looked closer ahead —
+    imaginations are unchanged, the census changed.
+
+### Separating the two explanations
+
+The way to tell is to look *within* each medium. If explanation (A) is right,
+every medium should show its own decline. If (B) is right, the within-medium
+lines should be flat.
+
+```{r}
+#| label: within-medium-table
+
+by_decade_medium <- ff_median_horizon(
+  ff_analysis, medium, release_decade,
+  min_n = settings$min_cell_n
+)
+
+by_decade_medium |>
+  select(medium, release_decade, median_horizon, n) |>
+  pivot_wider(names_from = release_decade,
+              values_from = c(median_horizon, n))
+```
+
+```{r}
+#| label: within-medium-plot
+#| fig-height: 6
+
+by_decade_medium |>
+  filter(!is.na(median_horizon)) |>
+  ggplot(aes(release_decade, median_horizon)) +
+  geom_line(linewidth = 0.9, colour = "grey45") +
+  geom_point(aes(size = n), colour = "#9a3324") +
+  scale_size_area(max_size = 5, guide = "none") +
+  scale_y_log10(labels = label_comma()) +
+  facet_wrap(~ medium, ncol = 3) +
+  labs(
+    title    = "The decline is not the same in every medium",
+    subtitle = paste0("Median horizon by decade, log scale. Cells with fewer than ",
+                      settings$min_cell_n, " works are omitted."),
+    x = "Release decade", y = "Median horizon (years, log scale)"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+The picture breaks apart immediately. Film slides steadily downward. Prose
+fiction wanders around 50–70 years with no clear direction. Television has no
+trend at all.
+
+### Fit a trend to each medium
+
+Eyeballing facets is not enough — we need slopes with uncertainty attached.
+`ff_slopes_by_medium()` fits `log1p(horizon) ~ released` separately for each
+medium and converts the slope into a percentage change per year.
+
+```{r}
+#| label: slopes
+
+slopes <- ff_slopes_by_medium(ff_analysis, min_n = settings$min_slope_n)
+
+slopes |>
+  select(medium, n, pct_per_year, pct_per_year_low, pct_per_year_high,
+         p_value, significant) |>
+  mutate(across(starts_with("pct"), ~ round(.x, 2)),
+         p_value = signif(p_value, 3))
+```
+
+This is the answer to our research question, and it is not the answer the pooled
+chart suggested:
+
+-   **Film: −2.0% per year** (95% CI −2.7% to −1.3%). A real, strong contraction.
+    Over the 74 years in view, that compounds to roughly a four-fold reduction.
+-   **Video games: −2.3% per year** (CI −4.2% to −0.5%). Also contracting.
+-   **Prose fiction: −0.3% per year**, confidence interval straddling zero,
+    p = 0.53. **No detectable change in seventy years.**
+-   **Television: +0.04% per year**, p = 0.97. Flat.
+-   **Comics: +1.2% per year**, p = 0.39. No trend (and only 72 works).
+
+### Confirm with the pooled models
+
+One last check. Compare the pooled trend with and without a control for medium:
+if adding `medium` shrinks the trend substantially, that is direct evidence the
+composition shift was doing part of the work.
+
+```{r}
+#| label: pooled-models
+
+models <- ff_pooled_models(ff_analysis)
+
+bind_rows(
+  ff_slope_row(models$pooled,      "horizon ~ released"),
+  ff_slope_row(models$with_medium, "horizon ~ released + medium")
+) |>
+  mutate(across(c(slope, ci_low, ci_high), ~ round(.x, 5)),
+         pct_per_year = round(pct_per_year, 2),
+         r_squared    = round(r_squared, 4),
+         p_value      = signif(p_value, 3))
+```
+
+Adding `medium` cuts the trend from **−1.52% to −0.91% per year** — the
+composition shift accounts for roughly 40% of the apparent decline. The
+remaining −0.91% stays statistically significant, but we now know from the
+per-medium fits that it is not spread evenly: it is film and video games moving,
+with prose and television standing still.
+
+Note the R² values too: 0.013 and 0.057. Release year explains **less than 6%**
+of the variation in horizon even with medium included. The trend is real but
+modest; the overwhelming majority of the variation is individual works choosing
+whatever year suited the story.
+
+------------------------------------------------------------------------
+
+## A bonus finding: expired futures
+
+While we have the data open — how many of these imagined futures have already
+been overtaken by real time?
+
+```{r}
+#| label: expired
+
+ff |>
+  filter(!is.na(year_set)) |>
+  mutate(expired = year_set <= settings$current_year) |>
+  summarise(
+    n_works      = n(),
+    n_expired    = sum(expired),
+    pct_expired  = round(100 * mean(expired), 1),
+    median_lead  = median(horizon[expired])
+  )
+```
+
+**Nearly half the corpus — 1,138 works — is set in a year that has already
+happened.** And the typical one was only looking ten years ahead when it was
+made. A large share of futuristic fiction is not about the future at all any
+more; it is about a past that never arrived.
+
+------------------------------------------------------------------------
+
+## Conclusions
+
+**Answer to the research question.** Yes, the pooled imagined horizon has
+contracted — from a median of 63 years in the 1960s to 24 years in the 2020s.
+But that headline is a composite of two different things, and only one of them is
+about imagination:
+
+1.  **Screen media really are pulling their futures closer.** Film contracts
+    2.0% per year and video games 2.3% per year, both robustly.
+2.  **Print is not.** Prose fiction shows no detectable change across seventy
+    years, and neither does television.
+3.  **The medium mix transformed.** Prose fell from 68% to 16% of futuristic
+    works while film rose from 19% to 48%. This composition shift alone accounts
+    for about 40% of the apparent pooled decline.
+
+The honest headline is therefore not "science fiction has lost its nerve" but
+**"the futures we are shown moved closer because the screen took over the job of
+showing them — and the screen has always looked, and increasingly looks, nearer
+ahead."**
+
+**Limitations to carry forward.**
+
+-   `year_set` is a single representative year, but 242 works span multiple years
+    and some are genuinely ambiguous in the source.
+-   Round-number clustering (8.5% of works set in a year ending "00") makes
+    decade medians lumpy.
+-   The corpus is Wikipedia/Wikidata-derived, so coverage of recent and
+    English-language screen media is almost certainly better than coverage of
+    older or non-anglophone print. Rising counts per decade are partly rising
+    documentation.
+-   The 2020s are a partial decade (2020–2024 only).
+
+**What goes into the report.** Five things: every work drawn as an individual
+mark, the five per-medium verdicts, the composition shift, the round-number
+spikes, and the expired futures.
+
+```{r}
+#| label: save-processed
+
+# Save the analysis set so the report script does not have to redo this work.
+out_dir <- here("data", "post45_books", "processed")
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+ff_analysis |>
+  select(record_id, title, creator, released, year_set, horizon,
+         release_decade, medium, genre, is_series, multiyears, predictions) |>
+  write_csv(file.path(out_dir, "futuristic_fiction_analysis.csv"))
+
+cat("Saved", nrow(ff_analysis), "rows to",
+    file.path(out_dir, "futuristic_fiction_analysis.csv"), "\n")
+```
+
+### Session info
+
+Recording package versions makes the analysis reproducible.
+
+```{r}
+#| label: session-info
+
+sessionInfo()
+```
