@@ -1,0 +1,196 @@
+---
+title: "Is the imagined future getting closer?"
+subtitle: "Exploratory analysis of 2,552 works of futuristic fiction, 1733–2024"
+author: "Jeremy Mikecz"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    df-print: paged
+    fig-width: 9
+    fig-height: 5.5
+editor: visual
+---
+
+## Setup
+
+### Packages
+
+```{r}
+#| label: packages
+#| message: false
+
+library(tidyverse)   
+library(here)       
+library(scales)      # nicer axis labels (comma separators, log ticks)
+```
+
+## Import Data
+
+```{r}
+future_fiction_df <- read_csv(here("data/post45_books/original/futuristic_fiction.csv"))
+```
+
+## Explore Data
+
+### Overview: Dimensions, columns, data types
+
+```{r}
+dim(future_fiction_df)
+```
+
+```{r}
+colnames(future_fiction_df)
+```
+
+```{r}
+glimpse(future_fiction_df)
+```
+
+```{r}
+head(future_fiction_df)
+```
+
+### Missing Data
+
+RStudio:
+
+- open dataframe
+
+- review summary (click on "Summary" if not already shown)
+
+Exploring missing data via code:\
+Line 1: `future_fiction_df |>`
+
+This just says "take the dataset and feed it into the next function." The `|>` is the **native pipe** (base R, 4.1+) — it passes whatever's on the left as the first argument to whatever's on the right. Worth reminding students this is equivalent to `magrittr`'s `%>%` for most everyday uses.
+
+### Line 2: `summarise(across(everything(), ~sum(is.na(.x))))`
+
+Read this inside-out — three nested layers:
+
+1.   **`is.na(.x)`** (innermost) — for a single column `.x`, this returns a logical vector: `TRUE` where a value is missing, `FALSE` where it isn't.
+
+2.  **`sum(is.na(.x))`** — `TRUE`/`FALSE` are treated as `1`/`0`, so summing counts how many `NA`s are in that column.
+
+3.  **`across(everything(), ~sum(is.na(.x)))`** — `across()` applies that counting formula to *every* column (`everything()` = all columns). The `~` turns the expression into a formula/lambda, and `.x` is a placeholder standing in for "whichever column we're currently on."
+
+4.  **`summarise(...)`** (outermost) — collapses the whole data frame down to **one row**, with one column per original variable, each holding its NA count.
+
+So after this line: you have a 1-row, wide data frame — one number per column, telling you how many NAs it has.
+
+### Line 3: `pivot_longer(everything(), names_to = "column", values_to = "n_missing")`
+
+The output of line 2 is wide (one column per variable) — hard to sort or scan. This reshapes it to **long format**:
+
+- `everything()` — take all those wide columns
+
+- `names_to = "column"` — put the *original column names* into a new column called `"column"`
+
+- `values_to = "n_missing"` — put the *NA counts* into a new column called `"n_missing"`
+
+Result: a tidy data frame with 2 columns and one row *per original variable*.
+
+### Line 4: `mutate(pct_missing = round(100 * n_missing / nrow(future_fiction_df), 1))`
+
+Again, inside out:
+
+1.   **`n_missing / nrow(future_fiction_df)`** — the count of missing values divided by the *total number of rows* in the original dataset → a proportion (0 to 1).
+
+2.  **`100 * (...)`** — converts that proportion to a percentage.
+
+3.  **`round(..., 1)`** — rounds to 1 decimal place.
+
+4.  **`mutate(pct_missing = ...)`** — stores that percentage as a new column, `pct_missing`.
+
+Note `nrow(future_fiction_df)` refers back to the *original* full dataset — a nice point to flag, since by this point in the pipe we're no longer working with the original object directly, but we can still reference it by name.
+
+### Line 5: `arrange(desc(n_missing))`
+
+Sorts the rows so the columns with the **most** missing values appear at the top (`desc()` = descending order).
+
+```{r}
+future_fiction_df |>
+    summarise(across(everything(), ~sum(is.na(.x)))) |>
+    pivot_longer(everything(), names_to = "column", values_to = "n_missing") |>
+    mutate(pct_missing = round(100 * n_missing/ nrow(future_fiction_df), 1)) |>
+    arrange(desc(n_missing))
+```
+
+### Category Counts
+
+**medium**
+
+```{r}
+future_fiction_df |> count(medium, sort = TRUE)
+```
+
+**genre**
+
+```{r}
+future_fiction_df |>
+    count(genre, sort=TRUE)
+```
+
+**genre x medium**
+
+```{r}
+future_fiction_df |>
+    count(medium, genre, sort=TRUE)
+
+```
+
+### Data check: horizon
+
+## Data Distributions
+
+Key variables: `year_set` and `year_distant`. **year_set** is pulled directly from the sources, so would need to be check manually.
+
+**year_distant** is presumably calculated by subtracting the release year (`released`) from the year set (`year_set`). To ensure this was calculated correctly we can re-run this calculation, store it as a new column (`horizon`), and then compare our new `horizon` column with the `year_distant` column.
+
+```{r}
+future_fiction_df <- future_fiction_df |>
+    mutate(
+        horizon = year_set - released,
+        horizon_match = horizon == years_distant,
+        release_decade = (released %/% 10) * 10
+    )
+```
+
+```{r}
+future_fiction_df |>
+    count(horizon_match)
+```
+
+### Distribution: horizon
+
+```{r}
+summary(future_fiction_df$years_distant)
+```
+
+Huge difference between median (37 years) and mean (39 billion) due to extreme maximum values (i.e. 100 trillion years)
+
+## Simple Visualizations
+
+## AI Coding Assistant
+
+### released date x year_distant
+
+#### simple prompt
+
+#### complex prompt
+
+### simple prompt, simple model –\> ggplot
+
+### precise prompt, simple model –\> ggplot
+
+### simple prompt, complex model –\> ggplot
+
+### precise prompt, complex model –\> ggplot
+
+### precise prompt, complex model –\> plotly / js interactive
+
+### Prompting
+
+### 
