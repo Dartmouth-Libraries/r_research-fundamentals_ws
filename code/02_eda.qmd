@@ -77,6 +77,10 @@ str(routes_df)
 ```{r}
 routes_df|>
   summarize(across(everything(), ~ sum(is.na(.))))
+# # ~ is shorthand for "make this into a function."
+# . is the placeholder for "whatever column is currently being processed." So as across() loops through each column one at a time, . stands in for that column.
+
+# you could also do this in base R: colSums(is.na(routes_df))
 ```
 
 There are a lot of NAs in `pax_per_year`!
