@@ -1,0 +1,321 @@
+---
+title: "Is the imagined future getting closer?"
+subtitle: "Exploratory analysis of 2,552 works of futuristic fiction, 1733–2024"
+author: "Jeremy Mikecz"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    df-print: paged
+    fig-width: 9
+    fig-height: 5.5
+editor: visual
+---
+
+If you have your own data and a general project question, you may use the instructions below to set up your own project.
+
+If not, no problem. You can use the data provided for the workshop in the workshop folder: `data/post45_books`.
+
+\[option: split into 2 groups: own data vs. workshop data; have them discuss research Qs and how they can answer from the data; former requires more explanation; latter more exploration\]
+
+## 0A. Project Set up: From Scratch
+
+1.  download books data
+2.  Create a new folder for your new project
+3.  set up the folder structure, i.e.:
+
+```{sample-folder}
+new-project/
+  code/
+  data/
+    raw/
+    working/
+  docs/
+  notes/
+  README.md
+```
+
+3.  Create a new RStudio Project and link to this folder: **File –\> New Project –\> Existing Directory –\> ...**
+    3.  *different ways of moving between projects*
+    4.  
+4.  Create a `README.md` file in your project root directory and insert some basic information about the project (more details can be added later)
+5.  import data into your `data/` folder.
+6.  create a new code notebook in the `code/` folder called something like `01_eda.qmd`.
+
+**Next, you can type / copy in the relevant code below into this new noteboook**.
+
+## 0B. Project Setup: from an existing project
+
+If you want to work with an existing project found on Github you can:
+
+1.  *For beginner programmers and those that simply want to use the code from this external project but don't need to send changes back to the project.*\*
+    1.  **Download the data** by selecting the Green **Code** button and selecting **Download ZIP** on the main Github repository page for this project.
+    2.  Unzip this downloaded folder
+    3.  Navigate to the root directory on your local computer (or cloud drive) where you want to place this project. Move the unzipped project folder here
+2.  *For more advanced programmers (!!) who need to collaborate with others on a Github project, including making changes to the code on the remote (online) repository*:
+    1.  **Clone the data** by selecting the Green **Code** button.
+    2.  If you have a local SSH Key set up already for git, under **Clone** select **SSH** –\> copy the SSH url. If not, select **HTTPS** –\> copy the HTTPS url.
+    3.  open a terminal on your own computer, navigate to the root directory where you want to place the project and then type `git clone {url-of-cloned-repo}`.
+    4.  **NOTE**: the steps for cloning and pulling and pushing changes from a remote Github repository to your local version is beyond the scope of this lesson!
+3.  Create a new RStudio project and link to this folder: **File –\> New Project –\> Existing Directory –\> ...**
+4.  follow the remaining instructions under **0A** above.
+
+## 1. Notebook Setup
+
+### Packages
+
+```{r}
+#| label: packages
+#| message: false
+
+library(tidyverse)   
+library(here)       
+library(scales)      # nicer axis labels (comma separators, log ticks)
+```
+
+## Import Data
+
+```{r}
+future_fiction_df <- read_csv(here("data/post45_books/original/futuristic_fiction.csv"))
+```
+
+## Explore Data
+
+### Overview: Dimensions, columns, data types
+
+```{r}
+dim(future_fiction_df)
+```
+
+```{r}
+colnames(future_fiction_df)
+```
+
+```{r}
+glimpse(future_fiction_df)
+```
+
+```{r}
+summary(future_fiction_df |> select(released, year_set, years_distant))
+```
+
+```{r}
+head(future_fiction_df)
+```
+
+```{r}
+future_fiction_df |>
+    count(medium) |>
+    arrange(desc(n))
+```
+
+```{r}
+future_fiction_df |>
+    filter(years_distant > 10000)
+```
+
+### Missing Data
+
+RStudio:
+
+- open dataframe
+
+- review summary (click on "Summary" if not already shown)
+
+Exploring missing data via code:\
+Line 1: `future_fiction_df |>`
+
+This just says "take the dataset and feed it into the next function." The `|>` is the **native pipe** (base R, 4.1+) — it passes whatever's on the left as the first argument to whatever's on the right. Worth reminding students this is equivalent to `magrittr`'s `%>%` for most everyday uses.
+
+### Line 2: `summarise(across(everything(), ~sum(is.na(.x))))`
+
+Read this inside-out — three nested layers:
+
+1.  **`is.na(.x)`** (innermost) — for a single column `.x`, this returns a logical vector: `TRUE` where a value is missing, `FALSE` where it isn't.
+
+2.  **`sum(is.na(.x))`** — `TRUE`/`FALSE` are treated as `1`/`0`, so summing counts how many `NA`s are in that column.
+
+3.  **`across(everything(), ~sum(is.na(.x)))`** — `across()` applies that counting formula to *every* column (`everything()` = all columns). The `~` turns the expression into a formula/lambda, and `.x` is a placeholder standing in for "whichever column we're currently on."
+
+4.  **`summarise(...)`** (outermost) — collapses the whole data frame down to **one row**, with one column per original variable, each holding its NA count.
+
+So after this line: you have a 1-row, wide data frame — one number per column, telling you how many NAs it has.
+
+### Line 3: `pivot_longer(everything(), names_to = "column", values_to = "n_missing")`
+
+The output of line 2 is wide (one column per variable) — hard to sort or scan. This reshapes it to **long format**:
+
+- `everything()` — take all those wide columns
+
+- `names_to = "column"` — put the *original column names* into a new column called `"column"`
+
+- `values_to = "n_missing"` — put the *NA counts* into a new column called `"n_missing"`
+
+Result: a tidy data frame with 2 columns and one row *per original variable*.
+
+### Line 4: `mutate(pct_missing = round(100 * n_missing / nrow(future_fiction_df), 1))`
+
+Again, inside out:
+
+1.  **`n_missing / nrow(future_fiction_df)`** — the count of missing values divided by the *total number of rows* in the original dataset → a proportion (0 to 1).
+
+2.  **`100 * (...)`** — converts that proportion to a percentage.
+
+3.  **`round(..., 1)`** — rounds to 1 decimal place.
+
+4.  **`mutate(pct_missing = ...)`** — stores that percentage as a new column, `pct_missing`.
+
+Note `nrow(future_fiction_df)` refers back to the *original* full dataset — a nice point to flag, since by this point in the pipe we're no longer working with the original object directly, but we can still reference it by name.
+
+### Line 5: `arrange(desc(n_missing))`
+
+Sorts the rows so the columns with the **most** missing values appear at the top (`desc()` = descending order).
+
+```{r}
+future_fiction_df |>
+    summarise(across(everything(), ~sum(is.na(.x)))) |>
+    pivot_longer(everything(), names_to = "column", values_to = "n_missing") |>
+    mutate(pct_missing = round(100 * n_missing/ nrow(future_fiction_df), 1)) |>
+    arrange(desc(n_missing))
+```
+
+### Category Counts
+
+**medium**
+
+```{r}
+future_fiction_df |> count(medium, sort = TRUE)
+```
+
+**genre**
+
+```{r}
+future_fiction_df |>
+    count(genre, sort=TRUE)
+```
+
+**genre x medium**
+
+```{r}
+future_fiction_df |>
+    count(medium, genre, sort=TRUE)
+
+```
+
+### Data check: horizon
+
+## Data Distributions
+
+Key variables: `year_set` and `year_distant`. **year_set** is pulled directly from the sources, so would need to be check manually.
+
+**year_distant** is presumably calculated by subtracting the release year (`released`) from the year set (`year_set`). To ensure this was calculated correctly we can re-run this calculation, store it as a new column (`horizon`), and then compare our new `horizon` column with the `year_distant` column.
+
+```{r}
+future_fiction_df <- future_fiction_df |>
+    mutate(
+        horizon = year_set - released,
+        horizon_match = horizon == years_distant,
+        release_decade = (released %/% 10) * 10
+    )
+```
+
+```{r}
+future_fiction_df |>
+    count(horizon_match)
+```
+
+### Distribution: horizon
+
+```{r}
+summary(future_fiction_df$years_distant)
+```
+
+Huge difference between median (37 years) and mean (39 billion) due to extreme maximum values (i.e. 100 trillion years)
+
+## Simple Visualizations
+
+```{r}
+ggplot(future_fiction_df, aes(x=release_decade, )) +
+    geom_histogram(stat="count", fill="blue", color="black") +
+    theme_minimal()
+```
+
+```{r}
+ggplot(future_fiction_df, aes(x=years_distant, y=medium, fill=medium)) +
+    geom_violin() +
+    scale_x_continuous(trans="log10")
+```
+
+```{r}
+future_fiction_df <- future_fiction_df |>
+    filter(years_distant > 0,
+           !is.na(years_distant)) |>
+    mutate(years_distant_log = log10(years_distant))
+```
+
+```{r}
+# install.packages("ggbeeswarm")
+#library(ggbeeswarm)
+ggplot(future_fiction_df, aes(x=years_distant_log, y=medium, fill=medium)) +
+    geom_violin() 
+    #geom_beeswarm(cex=0.3, size=0.5, alpha=0.3, color="darkgray") +
+    #scale_x_continuous(trans="log10")
+```
+
+```{r}
+future_fiction_df |>
+    count(medium)
+```
+
+```{r}
+media_to_exclude <- c("drama", "illustration", "ride", "tabletop game")
+future_near_horizon_df <- future_fiction_df |>
+    filter(year_set < 10000,
+           !medium %in% media_to_exclude) 
+    
+```
+
+```{r}
+ggplot(future_near_horizon_df, aes(x=released, y=year_set, color=medium)) +
+    geom_point(size=1, alpha=0.3) +
+    scale_y_continuous(trans="log10")
+```
+
+```{r}
+background_df <- future_near_horizon_df |>
+    select(-medium)
+```
+
+```{r}
+#install.packages("rcartocolor")
+#install.packages("ggnewscale")
+#install.packages("colorspace")
+library(rcartocolor)
+#library(ggnewscale)
+#library(colorspace)
+bold_palette <- carto_pal(n = 10, "Bold")  # "Bold" is a literal palette name in this package
+# dark_palette <- darken(bold_palette, amount = 0.3)
+```
+
+```{r}
+ggplot(future_near_horizon_df, aes(x = released, y = year_set)) +
+    # Gray, small, transparent points for ALL data in every facet
+    geom_point(data = background_df, color = "grey80", size = 0.8, alpha = 0.3) +
+    # Bold purple points for just this facet's medium
+    # geom_point(color = "purple", size = 1.3, alpha = 0.8) +
+    geom_point(aes(color=medium), size = 1.6, alpha = 0.6) +
+    scale_color_manual(values = bold_palette) +
+    
+    # new_scale_color() +  # reset color scale for the next layer
+    
+    geom_smooth(data = background_df, method="loess", se = FALSE, linewidth = 1, color = "gray") +
+    
+    geom_smooth(method = "loess", se = FALSE, linewidth = 1, color = "darkorchid") +
+    
+    scale_y_continuous(trans = "log10") +
+    facet_wrap(~ medium) +
+    theme(legend.position = "none") +
+    theme_minimal()
+```

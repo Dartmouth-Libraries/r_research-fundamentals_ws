@@ -19,8 +19,9 @@ If not, no problem. You can use the data provided for the workshop in the worksh
 
 ## 0A. Project Set up: From Scratch
 
-1.  Create a new folder for your new project
-2.  set up the folder structure, i.e.:
+1.  download books data
+2.  Create a new folder for your new project
+3.  set up the folder structure, i.e.:
 
 ```{sample-folder}
 new-project/
@@ -34,6 +35,8 @@ new-project/
 ```
 
 3.  Create a new RStudio Project and link to this folder: **File –\> New Project –\> Existing Directory –\> ...**
+    3.  *different ways of moving between projects*
+    4.  
 4.  Create a `README.md` file in your project root directory and insert some basic information about the project (more details can be added later)
 5.  import data into your `data/` folder.
 6.  create a new code notebook in the `code/` folder called something like `01_eda.qmd`.

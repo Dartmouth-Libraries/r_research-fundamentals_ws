@@ -1,0 +1,1123 @@
+---
+title: "05c Creating Visualizations with AI Assistance"
+author: "Jeremy Mikecz"
+format: html
+editor: visual
+---
+
+## Setup
+
+### Packages
+
+```{r}
+#| label: packages
+#| message: false
+
+library(tidyverse)   
+library(here)       
+library(scales)      # nicer axis labels (comma separators, log ticks)
+```
+
+## Import Data
+
+```{r}
+future_fiction_df <- read_csv(here("data/post45_books/original/futuristic_fiction.csv"))
+```
+
+## AI Coding Assistant Visualization
+
+### released date x year_distant
+
+#### simple prompt
+
+I am working with a dataframe in R that contains data about science fiction (books, films, etc.). For each work, the data contains a `years_distant` and `released` (release year of the work) column. There are also `medium` (book, film, etc.) and `genre` columns. Create R code to create a static plot showing the relationship between release year and year the work was set in.
+
+#### complex prompt - human
+
+1.  tools: R + tidyverse + ggplot
+2.  column names
+3.  plot type (from data to viz.com)
+
+I am working with a dataframe in R **(using tidyverse)** that contains data about science fiction (books, films, etc.). For each work, the data contains a `years_distant` and `released` (release year of the work) column. There are also `medium` (book, film, etc.) and `genre` columns. Create **ggplot** code to create a static plot showing the relationship between release year and year the work was set in. Adjust for the works set in the extreme future.
+
+\*\*This is the summary() of the 3 most relevant columns found in this dataframe (called `future_fiction_df`):\*\*
+
+```{r-summary}
+    released       year_set         years_distant      
+ Min.   :1733   Min.   :1.840e+03   Min.   :0.000e+00  
+ 1st Qu.:1982   1st Qu.:2.011e+03   1st Qu.:1.100e+01  
+ Median :1998   Median :2.033e+03   Median :3.700e+01  
+ Mean   :1990   Mean   :3.935e+10   Mean   :3.935e+10  
+ 3rd Qu.:2009   3rd Qu.:2.140e+03   3rd Qu.:1.510e+02  
+ Max.   :2024   Max.   :1.000e+14   Max.   :1.000e+14  
+                NA's   :10          NA's   :10   
+```
+
+Render the graphic in the style of The Urban Institute's style guide. Follow data visualization best practices.
+
+### complex prompt - human + LLM
+
+```{prompt}
+You're helping me build a publication-quality static chart in R (tidyverse/ggplot2).
+
+Data
+
+Dataframe: future_fiction_df, one row per science fiction work. n = 2552.glimpse(future_fiction_df):
+
+Collapse
+
+Copy
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+Rows: 2,552
+
+Columns: 17
+
+$ ...1 <dbl> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1…
+
+$ record_id <chr> "madden_memoirs_1733", "madden_reign_17…
+
+$ wikidata_work_qid <chr> "Q17068855", "Q64448555", "Q82530", "Q6…
+
+$ title <chr> "Memoirs of the Twentieth Century", "Th…
+
+$ creator <chr> "Samuel Madden", "Samuel Madden", "Loui…
+
+$ released <dbl> 1733, 1763, 1771, 1777, 1781, 1793, 179…
+
+$ year_set <dbl> 1997, 1900, 2440, 2440, 7603, 3000, 222…
+
+$ years_distant <dbl> 264, 137, 669, 663, 5822, 1207, 429, 20…
+
+$ multiyears <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+
+$ medium <chr> "prose fiction", "prose fiction", "pros…
+
+$ genre <chr> "epistolary novel", "futuristic", "scie…
+
+$ wikipedia_pg <chr> "https://en.wikipedia.org/wiki/Memoirs_…
+
+$ verify_yr <chr> NA, "https://openpublishing.psu.edu/uto…
+
+$ notes <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+
+$ is_series <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+
+$ predictions <chr> "Predicts the dominance of Catholicism …
+
+$ source <chr> "wikipast", "wikidata", "wikicategory; …
+
+future_fiction_df |> count(medium, sort = TRUE)
+
+Collapse
+
+Copy
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+medium
+
+<chr>
+
+n
+
+<int>
+
+film 960
+
+prose fiction 761
+
+television 377
+
+video game 325
+
+comics 75
+
+radio 36
+
+tabletop game 9
+
+drama 6
+
+ride 2
+
+illustration 1
+
+future_fiction_df |>count(genre, sort=TRUE)
+
+Collapse
+
+Run
+
+Copy
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+21
+
+22
+
+23
+
+24
+
+25
+
+26
+
+27
+
+28
+
+29
+
+30
+
+31
+
+32
+
+33
+
+34
+
+35
+
+36
+
+37
+
+38
+
+39
+
+40
+
+41
+
+A tibble:212 × 2
+
+genre
+
+<chr>
+
+n
+
+<int>
+
+science fiction 793
+
+NA 341
+
+action 264
+
+horror 73
+
+first-person shooter 69
+
+drama 60
+
+novel 59
+
+comedy 43
+
+dystopian 40
+
+futuristic 40
+
+adventure 33
+
+thriller 30
+
+action-adventure 29
+
+science fiction anime and manga 28
+
+tv series episode 27
+
+fantasy 26
+
+post-apocalyptic 19
+
+action anime and manga 17
+
+cyberpunk 16
+
+drama anime and manga 15
+
+short story 13
+
+comic 12
+
+animated sitcom 11
+
+platormer 11
+
+role-playing video game 11
+
+speculative/fantastic 11
+
+superhero 11
+
+adventure anime and manga 10
+
+crime 10
+
+crossover fiction 10
+
+racing 10
+
+real-time strategy 10
+
+third-person shooter 10
+
+mecha 8
+
+romantic comedy 8
+
+romance 7
+
+Key columns:
+
+released (int): year the work was published/released
+
+year_set (num): the in-universe year the work is set in
+
+years_distant (num): year_set - released
+
+medium (chr): 10 values: [film, prose fiction, television, etc.]
+
+genre (chr): 212 unique values values — see count abovesummary(future_fiction_df |> select(released, year_set, years_distant))
+
+Collapse
+
+Copy
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+released year_set years_distant
+
+Min. :1733 Min. :1.840e+03 Min. :0.000e+00
+
+1st Qu.:1982 1st Qu.:2.011e+03 1st Qu.:1.100e+01
+
+Median :1998 Median :2.033e+03 Median :3.700e+01
+
+Mean :1990 Mean :3.935e+10 Mean :3.935e+10
+
+3rd Qu.:2009 3rd Qu.:2.140e+03 3rd Qu.:1.510e+02
+
+Max. :2024 Max. :1.000e+14 Max. :1.000e+14
+
+NA's :10 NA's :10
+
+Data quirks you must handle:
+
+10 rows have NA for year_set / years_distant.
+
+years_distant has exact zeros, so scale_y_log10() will produce -Inf andsilently drop rows. Use log1p, pseudo_log_trans(), or an offset instead.
+
+Long right tail: 85 works are set beyond year 3000, 49 beyond year 10,000,max = 1e14. 99th percentile of years_distant = 198,000.
+
+What the chart should show
+
+The finding: how science fiction’s time horizon has shifted (or not) over time.Primary y-variable: years_distant. x: released.Encode medium as facets. In each facet render the selected medium as purple (alpha=0.5) and all other points in the background as gray (alpha=0.2, smaller size too). Ignore genre for now.
+
+Requirements
+
+Handle the extreme tail by [\a pseudo-log y axis withhuman-readable breaks at 1, 10, 100, 1k, 10k, 100k years]. If you filteranything out, do it explicitly and report the count in the caption.
+
+Address overplotting appropriately for n = 2552.
+
+Add a trend line and name the smoothing method in the subtitle.
+
+Title states the finding; subtitle gives scope/method; caption gives sourceplus any exclusions.
+
+Plain-English axis labels with units.
+
+Output: PNG via ggsave(), 8 x 5 in, 300 dpi.
+
+Style
+
+Urban Institute style guide. Use urbnthemes withset_urbn_defaults(style = "print") if available. If not, reproduce it manuallyso the script runs on tidyverse alone. Key specs: [typeface should be Lato (and an appropriate complementary font if needed).
+
+Constraints
+
+Use only the columns listed above. Do not invent columns or data values.
+
+After the code, 2-3 sentences on what the chart shows and its caveats.
+```
+
+### simple prompt, simple model –\> ggplot
+
+##### Gemma, simple prompt
+
+1.  had to replace "df_plotted" with name I am using for dataframe
+2.  had to replace "set_year" with "year_set
+3.  error(s)
+
+```{r}
+ggplot(future_fiction_df, aes(x = released, y = year_set, color = medium)) +
+    # Add points with some transparency to handle overlapping
+    geom_point(alpha = 0.7, size = 2) +
+    # Add a diagonal line representing "The Present" (where released == set_year)
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50") +
+    # Formatting labels
+    labs(
+        title = "Sci-Fi: Release Year vs. Setting Year",
+        subtitle = "Points above the dashed line are set in the future; below are set in the past",
+        x = "Year Released",
+        y = "Year Story is Set",
+        color = "Medium"
+    ) +
+    # Use a clean theme
+    theme_minimal() +
+    # Ensure the axes are scaled reasonably
+    scale_x_continuous(breaks = seq(min(future_fiction_df$released), max(future_fiction_df$released), by = 20)) +
+    scale_y_continuous(breaks = seq(floor(min(future_fiction_df$year_set)/100)*100, 
+                                    ceiling(max(future_fiction_df$year_set)/100)*100, 
+                                    by = 100))
+```
+
+##### Claude Haiku 4.5
+
+```{r}
+library(ggplot2)
+
+ggplot(future_fiction_df, aes(x = released, y = years_distant)) +
+    geom_point(alpha = 0.6) +
+    labs(
+        title = "Science Fiction Works: Release Year vs. Setting Year",
+        x = "Release Year",
+        y = "Years in the Future"
+    ) +
+    theme_minimal()
+```
+
+```{r}
+ggplot(future_fiction_df, aes(x = released, y = years_distant, color = medium)) +
+    geom_point(alpha = 0.6, size = 3) +
+    labs(
+        title = "Science Fiction Works: Release Year vs. Setting Year",
+        x = "Release Year",
+        y = "Years in the Future",
+        color = "Medium"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+```
+
+### simple prompt, complex model –\> ggplot
+
+##### Opus 5
+
+```{r}
+ggplot(future_fiction_df, aes(x = released, y = year_set)) +
+    # reference line: works set in the year they came out
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", colour = "grey50") +
+    geom_point(aes(colour = medium, shape = medium),
+               size = 2.5, alpha = 0.75) +
+    geom_smooth(method = "lm", formula = y ~ x,
+                se = TRUE, colour = "black", linewidth = 0.6) +
+    scale_x_continuous(breaks = pretty_breaks(8)) +
+    scale_y_continuous(labels = comma) +
+    labs(
+        title    = "When science fiction was made vs. when it is set",
+        subtitle = "Dashed line = work set in its own release year",
+        x        = "Year released",
+        y        = "Year the work is set in",
+        colour   = "Medium",
+        shape    = "Medium"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "bottom",
+          panel.grid.minor = element_blank())
+```
+
+## If a few works are set millions of years ahead
+
+A handful of extreme values will flatten everything else. Plot the *distance* into the future on a log scale instead:
+
+```{r}
+ggplot(future_fiction_df, aes(x = released, y = years_distant, colour = medium)) +
+    geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+    geom_point(size = 2.5, alpha = 0.75) +
+    geom_smooth(method = "loess", formula = y ~ x,
+                se = FALSE, colour = "black", linewidth = 0.6) +
+    scale_y_log10(labels = comma,
+                  breaks = 10^(0:9)) +
+    annotation_logticks(sides = "l") +
+    labs(title = "How far into the future is science fiction set?",
+         x = "Year released",
+         y = "Years into the future (log scale)",
+         colour = "Medium") +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "bottom")
+```
+
+### precise prompt, simple model –\> ggplot
+
+##### Gemma
+
+```{r}
+
+# Load necessary libraries
+library(tidyverse)
+library(scales)
+library(showtext) # For Lato font handling
+
+# 1. Handle Fonts (Urban Institute uses Lato)
+# This attempts to load Lato from Google Fonts
+font_add_google("Lato", "lato")
+showtext_auto()
+
+# --- Data Preparation ---
+
+# Filter out NAs and calculate exclusion count for caption
+df_clean <- future_fiction_df |> 
+    filter(!is.na(years_distant))
+
+n_excluded <- nrow(future_fiction_df) - nrow(df_clean)
+
+# To create the background effect, we need to duplicate the data 
+# so that every record appears in every facet.
+media_levels <- unique(df_clean$medium)
+
+df_plot <- expand_grid(
+    record_id = df_clean$record_id, 
+    facet_medium = media_levels
+) |> 
+    left_join(df_clean, by = "record_id") |> 
+    mutate(
+        is_highlight = (medium == facet_medium),
+        # Ensure facet_medium is a factor for consistent ordering
+        facet_medium = factor(facet_medium, levels = media_levels[order(table(df_clean$medium), decreasing = TRUE)])
+    )
+
+# --- Plotting ---
+
+# Defining Urban Institute-inspired colors
+urbn_purple <- "#6C3082"
+urbn_gray <- "#D3D3D3"
+
+p <- ggplot(df_plot, aes(x = released, y = years_distant)) +
+    # Background points: All records in the dataset
+    geom_point(
+        data = filter(df_plot, !is_highlight), 
+        color = urbn_gray, 
+        alpha = 0.2, 
+        size = 0.8
+    ) +
+    # Highlighted points: Only records belonging to the facet medium
+    geom_point(
+        data = filter(df_plot, is_highlight), 
+        color = urbn_purple, 
+        alpha = 0.5, 
+        size = 1.5
+    ) +
+    # Trend line: Calculated only for the highlighted medium
+    geom_smooth(
+        data = filter(df_plot, is_highlight), 
+        method = "gam", 
+        formula = y ~ s(x, bs = "cs"), 
+        color = urbn_purple, 
+        fill = urbn_purple, 
+        alpha = 0.1, 
+        linewidth = 1
+    ) +
+    # Axis transformations and labels
+    scale_y_continuous(
+        trans = pseudo_log_trans(sigma = 1), 
+        breaks = c(1, 10, 100, 1000, 10000, 100000),
+        labels = c("1", "10", "100", "1k", "10k", "100k"),
+        name = "Years into the future from release date"
+    ) +
+    scale_x_continuous(
+        name = "Year of release"
+    ) +
+    facet_wrap(~facet_medium, scales = "free_y") +
+    # Labels and Style
+    labs(
+        title = "Science fiction's time horizon has remained remarkably stable across media",
+        subtitle = "The distance into the future envisioned by authors over time (Smoothing: GAM)",
+        caption = paste0("Source: future_fiction_df. Excluded ", n_excluded, " records with missing date data.")
+    ) +
+    theme_minimal(base_family = "lato") +
+    theme(
+        # Urban Institute Style refinements
+        text = element_text(color = "#333333"),
+        plot.title = element_text(face = "bold", size = 14, margin = margin(b = 5)),
+        plot.subtitle = element_text(size = 11, margin = margin(b = 15)),
+        plot.caption = element_text(size = 8, color = "gray40", hjust = 0),
+        strip.text = element_text(face = "bold", size = 10),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "#EEEEEE"),
+        axis.title = element_text(size = 10),
+        plot.margin = margin(20, 20, 20, 20)
+    )
+
+# Save output
+ggsave("gemma_sf_time_horizon.png", plot = p, width = 8, height = 5, dpi = 300)
+```
+
+### precise prompt, complex model –\> ggplot
+
+##### Haiku 4.5
+
+```{r}
+library(scales)
+
+# Handle missing year_set values
+future_fiction_clean <- future_fiction_df |>
+    filter(!is.na(year_set), !is.na(years_distant))
+
+n_excluded <- nrow(future_fiction_df) - nrow(future_fiction_clean)
+
+# Create background data (all media)
+background_data <- future_fiction_clean
+
+# Function to create facet-specific data (foreground)
+create_facet_data <- function(df, med) {
+    df |> mutate(facet_medium = med)
+}
+
+# Build the plot
+p <- ggplot() +
+    # Gray background layer (all media, all points)
+    geom_point(
+        data = background_data,
+        aes(x = released, y = years_distant + 1),
+        color = "#cccccc",
+        alpha = 0.2,
+        size = 1.5
+    ) +
+    # Purple foreground layer (facet-specific medium)
+    geom_point(
+        data = future_fiction_clean,
+        aes(x = released, y = years_distant + 1),
+        color = "#6d028d",
+        alpha = 0.5,
+        size = 2.5
+    ) +
+    # Trend line with LOESS
+    geom_smooth(
+        data = future_fiction_clean,
+        aes(x = released, y = years_distant + 1),
+        method = "loess",
+        se = TRUE,
+        color = "#d92026",
+        fill = "#d92026",
+        alpha = 0.15,
+        linewidth = 1
+    ) +
+    # Pseudo-log y-axis
+    scale_y_log10(
+        breaks = c(1, 10, 100, 1e3, 1e4, 1e5),
+        labels = c("1", "10", "100", "1k", "10k", "100k"),
+        limits = c(0.5, NA)
+    ) +
+    # X-axis
+    scale_x_continuous(
+        breaks = seq(1750, 2025, by = 25),
+        limits = c(1730, 2030)
+    ) +
+    # Facets by medium
+    facet_wrap(
+        ~factor(medium, levels = c("film", "prose fiction", "television", 
+                                   "video game", "comics", "radio", 
+                                   "tabletop game", "drama", "ride", "illustration")),
+        ncol = 5
+    ) +
+    # Labels
+    labs(
+        title = "Science Fiction's Time Horizon: How Far Into the Future Do Stories Look?",
+        subtitle = "Trend lines fitted with LOESS smoothing; each facet highlights one medium against all others.",
+        x = "Year of Release",
+        y = "Years Into the Future (log scale)",
+        caption = paste0(
+            "Data: future_fiction_df (n = ", nrow(future_fiction_clean), 
+            " works; ", n_excluded, " excluded due to missing year_set). ",
+            "Source: Wikidata, Wikipedia."
+        )
+    ) +
+    theme_minimal() +
+    theme(
+        text = element_text(family = "Lato", size = 10, color = "#222222"),
+        plot.title = element_text(
+            family = "Lato",
+            size = 16,
+            face = "bold",
+            color = "#222222",
+            margin = margin(b = 6)
+        ),
+        plot.subtitle = element_text(
+            family = "Lato",
+            size = 11,
+            color = "#666666",
+            margin = margin(b = 10)
+        ),
+        plot.caption = element_text(
+            family = "Lato",
+            size = 8,
+            color = "#999999",
+            hjust = 0,
+            margin = margin(t = 8)
+        ),
+        axis.title = element_text(
+            family = "Lato",
+            size = 11,
+            color = "#222222"
+        ),
+        axis.text = element_text(
+            family = "Lato",
+            size = 9,
+            color = "#666666"
+        ),
+        panel.grid.major = element_line(color = "#e8e8e8", linewidth = 0.3),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "#ffffff", color = NA),
+        plot.background = element_rect(fill = "#ffffff", color = NA),
+        strip.text = element_text(
+            family = "Lato",
+            size = 10,
+            face = "bold",
+            color = "#222222"
+        ),
+        strip.background = element_rect(fill = "#f0f0f0", color = NA),
+        legend.position = "none",
+        plot.margin = margin(12, 12, 12, 12)
+    )
+
+# Save
+ggsave(
+    "haiku_sf_time_horizon.png",
+    p,
+    width = 8,
+    height = 5,
+    dpi = 300,
+    device = "png"
+)
+
+p
+```
+
+### precise prompt, complex model
+
+##### Opus 5
+
+```{r}
+
+# ---------------------------------------------------------------
+# How far into the future does science fiction look?
+# Urban Institute style, faceted by medium
+# ---------------------------------------------------------------
+
+
+# ---- 1. Fonts ---------------------------------------------------
+# Urban Institute house typeface is Lato. Fall back gracefully.
+base_family <- "sans"
+if (requireNamespace("systemfonts", quietly = TRUE)) {
+    fams <- systemfonts::system_fonts()$family
+    if ("Lato" %in% fams) base_family <- "Lato"
+}
+if (base_family != "Lato") {
+    message("Lato not found on this system; falling back to the default sans face.")
+}
+
+# ---- 2. Theme (urbnthemes if installed, manual clone if not) ----
+urbn_black <- "#000000"
+urbn_gray  <- "#d2d2d2"
+urbn_slate <- "#5c5859"
+urbn_purple      <- "#7a4fa3"   # highlight
+urbn_purple_dark <- "#412d5e"   # trend line
+
+theme_urbn_print_manual <- function(base_family = "sans") {
+    theme_minimal(base_size = 11, base_family = base_family) +
+        theme(
+            plot.title            = element_text(size = 14, face = "bold",
+                                                 colour = urbn_black,
+                                                 margin = margin(b = 4)),
+            plot.subtitle         = element_text(size = 9.5, colour = urbn_slate,
+                                                 margin = margin(b = 12), lineheight = 1.15),
+            plot.caption          = element_text(size = 7.5, colour = urbn_slate,
+                                                 hjust = 0, margin = margin(t = 12),
+                                                 lineheight = 1.2),
+            plot.title.position   = "plot",
+            plot.caption.position = "plot",
+            axis.title            = element_text(size = 9, colour = urbn_black),
+            axis.text             = element_text(size = 8, colour = urbn_slate),
+            axis.line.x           = element_line(colour = urbn_black, linewidth = 0.3),
+            axis.ticks.x          = element_line(colour = urbn_black, linewidth = 0.3),
+            axis.ticks.length     = unit(3, "pt"),
+            panel.grid.major.y    = element_line(colour = urbn_gray, linewidth = 0.3),
+            panel.grid.major.x    = element_blank(),
+            panel.grid.minor      = element_blank(),
+            strip.text            = element_text(size = 9, face = "bold",
+                                                 hjust = 0, colour = urbn_black,
+                                                 margin = margin(b = 3)),
+            panel.spacing         = unit(12, "pt"),
+            plot.margin           = margin(12, 16, 8, 12),
+            plot.background       = element_rect(fill = "white", colour = NA)
+        )
+}
+
+if (requireNamespace("urbnthemes", quietly = TRUE)) {
+    urbnthemes::set_urbn_defaults(style = "print")
+} else {
+    theme_set(theme_urbn_print_manual(base_family))
+}
+
+# ---- 3. Data prep: every exclusion is explicit and counted ------
+n_total <- nrow(future_fiction_df)
+
+# (a) drop rows with no in-universe year (or no medium / release year)
+d <- future_fiction_df |>
+    filter(!is.na(year_set), !is.na(years_distant), !is.na(released), !is.na(medium))
+n_missing <- n_total - nrow(d)
+
+# (b) drop media with too few works to show a credible trend (< 30)
+media_keep <- d |> count(medium) |> filter(n >= 30) |> pull(medium)
+dropped_media  <- d |> filter(!medium %in% media_keep)
+n_small_media  <- nrow(dropped_media)
+lbl_small_media <- dropped_media |> count(medium) |> arrange(desc(n)) |>
+    mutate(txt = paste0(medium, " (", n, ")")) |> pull(txt) |> paste(collapse = ", ")
+
+d <- d |> filter(medium %in% media_keep)
+
+# (c) drop the astronomically distant tail (> 1,000,000 years out) so the
+#     pseudo-log axis can top out at a readable 100k break
+cap <- 1e6
+n_capped <- sum(d$years_distant > cap)
+d <- d |> filter(years_distant <= cap)
+
+n_plotted   <- nrow(d)
+med_distant <- median(d$years_distant)
+
+# facet labels carry their own n
+plot_df <- d |>
+    add_count(medium, name = "n_medium") |>
+    mutate(
+        medium_lab = paste0(str_to_sentence(medium), " (n = ", comma(n_medium), ")"),
+        medium_lab = fct_reorder(medium_lab, -n_medium)
+    )
+
+# background layer: same points in EVERY panel (facet var removed)
+bg_df <- plot_df |> select(released, years_distant)
+
+# ---- 4. Plot ----------------------------------------------------
+p <- ggplot(plot_df, aes(released, years_distant)) +
+    geom_hline(yintercept = med_distant, colour = urbn_slate,
+               linewidth = 0.3, linetype = "22") +
+    # all other works, greyed out
+    geom_point(data = bg_df, colour = urbn_gray, alpha = 0.2, size = 0.5,
+               stroke = 0, position = position_jitter(width = 0.35, height = 0, seed = 42)) +
+    # the medium for this panel
+    geom_point(colour = urbn_purple, alpha = 0.5, size = 1.1,
+               stroke = 0, position = position_jitter(width = 0.35, height = 0, seed = 42)) +
+    geom_smooth(method = "loess", formula = y ~ x, span = 0.75, se = TRUE,
+                colour = urbn_purple_dark, fill = urbn_purple_dark,
+                alpha = 0.15, linewidth = 0.7) +
+    facet_wrap(~ medium_lab, nrow = 2) +
+    scale_x_continuous(
+        breaks = seq(1750, 2000, by = 50),
+        limits = c(1725, 2030),
+        expand = expansion(mult = c(0.02, 0.02))
+    ) +
+    scale_y_continuous(
+        # pseudo-log keeps the exact zeros (works set in their release year)
+        trans  = pseudo_log_trans(sigma = 1, base = 10),
+        breaks = c(0, 1, 10, 100, 1e3, 1e4, 1e5),
+        labels = c("0", "1", "10", "100", "1k", "10k", "100k"),
+        expand = expansion(mult = c(0.03, 0.06))
+    ) +
+    labs(
+        title = "Science fiction keeps shortening its horizon: most futures are decades away, not millennia",
+        subtitle = str_wrap(
+            paste0(
+                "Each panel highlights one medium in purple; all ", comma(n_plotted),
+                " plotted works appear in grey behind it. Lines are LOESS smoothers ",
+                "(span = 0.75, 95% confidence band) fit on the pseudo-log scale. ",
+                "The dashed line marks the overall median of ", round(med_distant),
+                " years into the future."
+            ), 118
+        ),
+        x = "Year the work was released",
+        y = "Years into the future the story is set\n(release year to in-universe year, pseudo-log scale)",
+        caption = str_wrap(
+            paste0(
+                "Source: Compiled dataset of science fiction works set in the future ",
+                "(Wikidata, Wikipedia categories, and Wikipast); ", comma(n_total), " works total. ",
+                "Exclusions: ", n_missing, " works with no recorded in-universe year; ",
+                n_small_media, " works in media with fewer than 30 records (", lbl_small_media, "); and ",
+                n_capped, " works set more than 1,000,000 years ahead, which would otherwise ",
+                "stretch the axis to 1e14. Points are jittered horizontally and drawn with ",
+                "transparency to reduce overplotting. A value of 0 means the story is set in its release year."
+            ), 150
+        )
+    ) +
+    theme(
+        plot.title.position   = "plot",
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, size = 7.5, colour = urbn_slate, lineheight = 1.2),
+        strip.text   = element_text(hjust = 0, face = "bold"),
+        panel.grid.major.x = element_blank(),
+        panel.spacing = unit(12, "pt")
+    )
+
+# ---- 5. Export --------------------------------------------------
+ggsave(
+    filename = "opus_scifi_time_horizon_by_medium.png",
+    plot     = p,
+    width    = 8, height = 5, units = "in", dpi = 300, bg = "white"
+)
+
+```
+
+##### Fable 5.1
+
+```{r}
+# ---------------------------------------------------------------------------
+# Science fiction's time horizon over time: years_distant vs. released,
+# faceted by medium, Urban Institute print style, 8 x 5 in PNG @ 300 dpi
+# ---------------------------------------------------------------------------
+
+# ---- 1. Style: urbnthemes if available, otherwise a manual reproduction -----
+purple    <- "#5c2d91"   # highlight colour (user spec: purple)
+gray_pt   <- "#9d9d9d"   # Urban gray for background points
+gray_grid <- "#dedddd"
+gray_text <- "#5c5859"
+
+have_urbn <- requireNamespace("urbnthemes", quietly = TRUE)
+if (have_urbn) {
+    library(urbnthemes)
+    set_urbn_defaults(style = "print")          # sets Lato + Urban theme
+    base_family <- "Lato"
+} else {
+    # Try to get Lato without adding hard dependencies; fall back to sans.
+    base_family <- "sans"
+    if (requireNamespace("systemfonts", quietly = TRUE) &&
+        any(grepl("^Lato", systemfonts::system_fonts()$family))) {
+        base_family <- "Lato"
+    } else if (requireNamespace("showtext", quietly = TRUE)) {
+        ok <- try({
+            sysfonts::font_add_google("Lato", "Lato")
+            showtext::showtext_auto()
+            showtext::showtext_opts(dpi = 300)       # match ggsave dpi
+        }, silent = TRUE)
+        if (!inherits(ok, "try-error")) base_family <- "Lato"
+    }
+    theme_set(
+        theme_minimal(base_size = 9, base_family = base_family) +
+            theme(
+                text                  = element_text(colour = "black"),
+                plot.title            = element_text(face = "bold", size = 12, hjust = 0),
+                plot.title.position   = "plot",
+                plot.subtitle         = element_text(size = 9, margin = margin(b = 8)),
+                plot.caption          = element_text(size = 7, hjust = 0, colour = gray_text,
+                                                     margin = margin(t = 8)),
+                plot.caption.position = "plot",
+                panel.grid.major.x    = element_blank(),
+                panel.grid.minor      = element_blank(),
+                panel.grid.major.y    = element_line(colour = gray_grid, linewidth = 0.3),
+                axis.line.x           = element_line(colour = "black", linewidth = 0.3),
+                axis.ticks            = element_blank(),
+                axis.title            = element_text(size = 8.5),
+                strip.text            = element_text(face = "bold", hjust = 0, size = 9),
+                strip.background      = element_blank(),
+                panel.spacing         = unit(0.9, "lines"),
+                legend.position       = "none"
+            )
+    )
+}
+
+# ---- 2. Explicit exclusions (all counts computed, then reported in caption) --
+min_release_year <- 1900   # set to -Inf to keep the 18th/19th-century works
+max_years_ahead  <- 1e6    # beyond the 99th pct (198k); keeps 1..100k breaks legible
+
+n_total <- nrow(future_fiction_df)
+n_na    <- sum(is.na(future_fiction_df$years_distant))
+n_far   <- sum(future_fiction_df$years_distant > max_years_ahead, na.rm = TRUE)
+n_early <- future_fiction_df |>
+    filter(!is.na(years_distant), years_distant <= max_years_ahead,
+           released < min_release_year) |>
+    nrow()
+
+dat <- future_fiction_df |>
+    filter(!is.na(years_distant),
+           years_distant <= max_years_ahead,
+           released >= min_release_year) |>
+    # 10 media, 5 of them tiny (<= 36 works): keep the 5 largest, pool the rest
+    mutate(medium_f = fct_lump_n(medium, n = 5, other_level = "Other media"),
+           medium_f = fct_infreq(medium_f),
+           medium_f = fct_relevel(medium_f, "Other media", after = Inf))
+
+other_members <- dat |>
+    filter(medium_f == "Other media") |>
+    distinct(medium) |> arrange(medium) |> pull(medium) |> str_flatten_comma()
+
+# Facet labels with n
+lab_lookup <- dat |>
+    count(medium_f) |>
+    mutate(lab = str_c(str_to_sentence(as.character(medium_f)),
+                       " (n = ", comma(n), ")")) |>
+    select(medium_f, lab) |>
+    deframe()
+dat <- dat |> mutate(facet = fct_relabel(medium_f, \(x) unname(lab_lookup[x])))
+
+# Background copy without the facet variable -> drawn in every panel
+bg <- dat |> select(-facet, -medium_f)
+
+# ---- 3. Plot ----------------------------------------------------------------
+jit <- position_jitter(width = 0.4, height = 0, seed = 1)  # x only; years are integers
+
+p <- ggplot(dat, aes(x = released, y = years_distant)) +
+    geom_point(data = bg, colour = gray_pt, alpha = 0.2, size = 0.5, position = jit) +
+    geom_point(colour = purple, alpha = 0.5, size = 1.1, position = jit) +
+    geom_smooth(method = "loess", formula = y ~ x, se = TRUE,
+                colour = purple, fill = purple, alpha = 0.15, linewidth = 0.9) +
+    facet_wrap(~ facet, ncol = 3) +
+    scale_x_continuous(breaks = seq(1900, 2020, by = 40),
+                       expand = expansion(mult = 0.02)) +
+    scale_y_continuous(
+        transform = pseudo_log_trans(sigma = 1, base = 10),  # use `trans =` on ggplot2 < 3.5
+        breaks = c(0, 1, 10, 100, 1e3, 1e4, 1e5, 1e6),
+        labels = c("0", "1", "10", "100", "1k", "10k", "100k", "1M"),
+        expand = expansion(mult = c(0.02, 0.06))
+    ) +
+    labs(
+        title    = "Science fiction's imagined future has crept closer to the present",
+        subtitle = str_glue(
+            "Years between a work's release and the year it is set, by medium, ",
+            "{min_release_year}\u20132024. Purple = works in this medium; gray = all other media.\n",
+            "Line and band: LOESS smooth with 95% confidence interval, fitted on the log scale."),
+        x = "Year the work was released",
+        y = "Years into the future the work is set (pseudo-log scale)",
+        caption = str_wrap(str_glue(
+            "Source: future_fiction_df, compiled from Wikidata and Wikipedia ",
+            "(n = {comma(n_total)} works; {comma(nrow(dat))} shown). ",
+            "Excluded: {n_na} works with no setting year, {n_far} works set more than ",
+            "1 million years ahead, and {n_early} works released before {min_release_year}. ",
+            "'Other media' pools {other_members}."), width = 150)
+    )
+
+ggsave("fable_future_fiction_time_horizon.png", p,
+       width = 8, height = 5, units = "in", dpi = 300, bg = "white")
+```
+
+### precise prompt, complex model –\> plotly / js interactive
